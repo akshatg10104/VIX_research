@@ -1,0 +1,6 @@
+,Accuracy,Precision,Recall
+Logistic Regression,97.49,95.58,96.5
+Decision Tree,94.68,90.91,92.36
+Random Forest,97.09,96.12,94.59
+SVM,70.31,95.0,6.05
+XGBoost,98.9,98.1,98.41

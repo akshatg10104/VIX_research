@@ -1,0 +1,26 @@
+N,Model,Accuracy,Precision,Recall
+5,Logistic Regression,82.03,69.36,76.68
+5,Decision Tree,82.73,71.96,73.8
+5,Random Forest,83.23,74.17,71.57
+5,SVM,69.88,88.24,4.79
+5,XGBoost,83.73,74.92,72.52
+10,Logistic Regression,76.18,61.06,66.35
+10,Decision Tree,79.2,69.52,59.94
+10,Random Forest,79.2,66.25,68.59
+10,SVM,69.55,80.0,3.85
+10,XGBoost,78.59,64.95,68.91
+15,Logistic Regression,75.35,59.76,64.95
+15,Decision Tree,66.5,47.24,60.45
+15,Random Forest,76.96,62.81,64.63
+15,SVM,69.42,76.92,3.22
+15,XGBoost,75.25,59.31,66.56
+20,Logistic Regression,75.73,60.42,64.52
+20,Decision Tree,78.35,67.4,59.35
+20,Random Forest,77.44,63.52,65.16
+20,SVM,68.88,54.55,1.94
+20,XGBoost,75.43,60.58,60.97
+25,Logistic Regression,74.5,58.86,60.19
+25,Decision Tree,77.12,66.53,53.4
+25,Random Forest,75.2,59.94,61.49
+25,SVM,68.04,10.0,0.32
+25,XGBoost,74.5,58.54,62.14
