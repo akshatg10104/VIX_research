@@ -1,0 +1,9 @@
+Model,N,Condition,Accuracy,Precision,Recall,Days,Pct_Days,TN,FP,FN,TP
+Random Forest,5,Baseline,82.93,72.99,72.52,996,100.0,599,84,86,227
+Random Forest,5,Selective (t=0.25),92.04,86.98,83.92,716,71.9,492,25,32,167
+Random Forest,20,Baseline,73.01,56.52,58.71,993,100.0,543,140,128,182
+Random Forest,20,Selective (t=0.25),87.38,75.26,73.0,404,40.7,280,24,27,73
+XGBoost,5,Baseline,83.84,73.6,75.72,996,100.0,598,85,76,237
+XGBoost,5,Selective (t=0.25),86.28,77.42,78.83,882,88.6,545,63,58,216
+XGBoost,20,Baseline,73.51,56.37,67.1,993,100.0,522,161,102,208
+XGBoost,20,Selective (t=0.25),78.93,60.23,73.93,750,75.5,436,103,55,156

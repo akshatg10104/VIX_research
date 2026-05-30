@@ -63,7 +63,13 @@ for n in [5, 10, 15, 20, 25]:
     shifted = df['VIX'].shift(-n)
     df[f'LABEL_{n}'] = (shifted >= 20).astype(float).where(shifted.notna())
 
-raw_cols   = ['VIX', 'VIX3M', 'SP500', 'GOLD', 'TNY', 'DXY']
+df['FEDFUNDS_CHANGE1M'] = df['FEDFUNDS'].diff(21)
+df['FEDFUNDS_CHANGE3M'] = df['FEDFUNDS'].diff(63)
+
+df['YIELD_CURVE_CHANGE1M'] = df['YIELD_CURVE'].diff(21)
+df['YIELD_CURVE_CHANGE3M'] = df['YIELD_CURVE'].diff(63)
+
+raw_cols   = ['VIX', 'VIX3M', 'SP500', 'GOLD', 'TNY', 'DXY', 'FEDFUNDS', 'YIELD_CURVE']
 label_cols = ['LABEL', 'LABEL_5', 'LABEL_10', 'LABEL_15', 'LABEL_20', 'LABEL_25']
 feature_cols = [c for c in df.columns if c not in raw_cols + label_cols]
 
