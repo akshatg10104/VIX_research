@@ -12,8 +12,13 @@ import seaborn as sns
 
 df = pd.read_csv('data/features.csv', index_col=0, parse_dates=True)
 
-RAW_COLS     = ['VIX', 'VIX3M', 'SP500', 'GOLD', 'TNY', 'DXY', 'FEDFUNDS', 'YIELD_CURVE']
-LABEL_COLS   = ['LABEL', 'LABEL_5', 'LABEL_10', 'LABEL_15', 'LABEL_20', 'LABEL_25']
+RAW_COLS   = ['VIX', 'VIX3M', 'SP500', 'GOLD', 'TNY', 'DXY',
+              'FEDFUNDS', 'YIELD_CURVE', 'VIX9D', 'SKEW']
+LABEL_COLS = (
+    ['LABEL'] +
+    [f'LABEL_{n}' for n in [5, 10, 15, 20, 25]] +
+    [f'LABEL_SUSTAINED_{n}' for n in [5, 10, 15, 20, 25]]
+)
 feature_cols = [c for c in df.columns if c not in RAW_COLS + LABEL_COLS]
 
 MODELS = {

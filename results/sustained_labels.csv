@@ -1,0 +1,31 @@
+N,Model,LabelType,Type,Accuracy,Precision,Recall,Brier
+5,Random Forest,Sustained,Baseline,85.89,70.12,72.73,0.1055
+5,Random Forest,Sustained,Calibrated,86.19,75.0,64.46,0.0957
+5,Random Forest,Sustained,Selective(t=0.25),94.03,90.23,78.43,
+5,XGBoost,Sustained,Baseline,86.99,72.05,75.62,0.112
+5,XGBoost,Sustained,Calibrated,85.69,72.6,65.7,0.0983
+5,XGBoost,Sustained,Selective(t=0.25),92.94,87.31,75.0,
+10,Random Forest,Sustained,Baseline,80.26,59.17,58.92,0.1383
+10,Random Forest,Sustained,Calibrated,82.46,66.02,56.43,0.1118
+10,Random Forest,Sustained,Selective(t=0.25),93.82,88.29,76.56,
+10,XGBoost,Sustained,Baseline,82.06,62.7,63.49,0.1435
+10,XGBoost,Sustained,Calibrated,83.27,67.13,60.17,0.1141
+10,XGBoost,Sustained,Selective(t=0.25),92.9,89.74,72.41,
+15,Random Forest,Sustained,Baseline,78.03,54.55,52.5,0.1542
+15,Random Forest,Sustained,Calibrated,83.35,75.34,45.83,0.1206
+15,Random Forest,Sustained,Selective(t=0.25),93.78,91.11,71.93,
+15,XGBoost,Sustained,Baseline,77.13,51.91,67.92,0.1692
+15,XGBoost,Sustained,Calibrated,82.65,71.61,46.25,0.1352
+15,XGBoost,Sustained,Selective(t=0.25),92.49,86.96,55.56,
+20,Random Forest,Sustained,Baseline,77.11,52.19,54.81,0.1597
+20,Random Forest,Sustained,Calibrated,82.93,79.49,38.91,0.128
+20,Random Forest,Sustained,Selective(t=0.25),94.32,92.73,64.56,
+20,XGBoost,Sustained,Baseline,77.11,51.78,66.95,0.1752
+20,XGBoost,Sustained,Calibrated,83.23,72.22,48.95,0.1418
+20,XGBoost,Sustained,Selective(t=0.25),94.61,100.0,50.0,
+25,Random Forest,Sustained,Baseline,76.98,51.76,55.46,0.1666
+25,Random Forest,Sustained,Calibrated,79.5,81.48,18.49,0.1477
+25,Random Forest,Sustained,Selective(t=0.25),89.94,0.0,0.0,
+25,XGBoost,Sustained,Baseline,74.97,48.06,57.14,0.2005
+25,XGBoost,Sustained,Calibrated,79.4,72.0,22.69,0.16
+25,XGBoost,Sustained,Selective(t=0.25),90.27,0.0,0.0,

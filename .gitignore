@@ -3,3 +3,10 @@ __pycache__/
 .DS_Store
 .env
 *.egg-info/
+.auth/
+.claude/
+brain_debug/
+brain_results.csv
+brain-auth.js
+run-brain-alphas.js
+alphas.txt
