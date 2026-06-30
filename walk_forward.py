@@ -29,7 +29,7 @@ N_SPLITS       = 5
 MODELS = {
     'Random Forest': RandomForestClassifier(n_estimators=200, max_depth=10,
                                             min_samples_leaf=5, random_state=42),
-    'XGBoost':       HistGradientBoostingClassifier(max_iter=200, max_depth=5,
+    'HGB':       HistGradientBoostingClassifier(max_iter=200, max_depth=5,
                                                     learning_rate=0.05, random_state=42),
 }
 
@@ -43,15 +43,21 @@ print(f"{'═'*80}")
 
 for n in N_VALUES:
     label_col = f'LABEL_{n}'
-    sub       = df[feature_cols + [label_col]].dropna(subset=[label_col])
-    X = sub[feature_cols].values
-    y = sub[label_col].astype(int).values
+    sub       = df[feature_cols + [label_col, 'VIX']].dropna(subset=[label_col])
+    X   = sub[feature_cols].values
+    y   = sub[label_col].astype(int).values
+    vix = sub['VIX'].values
 
     tscv_wf = TimeSeriesSplit(n_splits=N_SPLITS, gap=n)
 
     print(f"\n  N={n}")
     print(f"  {'Model':<18}  {'Fold':>5}  {'Base':>8}  {'SelAcc':>8}  {'ΔAcc':>7}  {'%Days':>7}")
     print(f"  {'─'*62}")
+
+    # Persistence tracking — filled alongside the RF fold loop
+    fold_base_persist = []
+    fold_sel_persist  = []
+    fold_pct_persist  = []
 
     for model_name, model_template in MODELS.items():
         fold_base = []
@@ -108,6 +114,22 @@ for n in N_VALUES:
                 fold_sel.append(sel_acc)
                 fold_pct.append(pct_sel)
 
+            # ── Persistence baseline at RF-matched coverage (only computed once per fold) ──
+            if model_name == 'Random Forest' and n_sel >= 20:
+                vix_test      = vix[test_idx]
+                persist_pred  = (vix_test >= 20).astype(int)
+                dist          = np.abs(vix_test - 20)
+                # threshold c so that exactly n_sel days are covered
+                sorted_dist   = np.sort(dist)[::-1]
+                c_thresh      = sorted_dist[min(n_sel, len(sorted_dist)) - 1]
+                p_mask        = dist >= c_thresh
+                p_base_acc    = accuracy_score(y_test, persist_pred)
+                p_sel_acc     = accuracy_score(y_test[p_mask], persist_pred[p_mask]) if p_mask.sum() >= 10 else float('nan')
+                fold_base_persist.append(p_base_acc)
+                if not np.isnan(p_sel_acc):
+                    fold_sel_persist.append(p_sel_acc)
+                    fold_pct_persist.append(p_mask.mean() * 100)
+
             sel_str = f"{sel_acc*100:>7.2f}%" if not np.isnan(sel_acc) else "     N/A"
             print(f"  {model_name:<18}  {fold:>5}  {base_acc*100:>7.2f}%  {sel_str}  "
                   f"{(sel_acc-base_acc)*100:>+6.2f}%  {pct_sel:>6.1f}%" if not np.isnan(sel_acc)
@@ -135,6 +157,26 @@ for n in N_VALUES:
                 Mean_Pct=round(mean_pct, 1) if not np.isnan(mean_pct) else None,
             ))
 
+    # ── Persistence summary row ───────────────────────────────────────────────
+    if fold_base_persist:
+        mb = np.mean(fold_base_persist); sb = np.std(fold_base_persist)
+        ms = np.mean(fold_sel_persist)  if fold_sel_persist  else float('nan')
+        ss = np.std(fold_sel_persist)   if fold_sel_persist  else float('nan')
+        mp = np.mean(fold_pct_persist)  if fold_pct_persist  else float('nan')
+        dt = ms - mb if not np.isnan(ms) else float('nan')
+        print(f"  {'Persistence (matched)':<18}  {'MEAN':>5}  "
+              f"{mb*100:>6.2f}±{sb*100:.1f}%  "
+              f"{ms*100:>6.2f}±{ss*100:.1f}%  "
+              f"{dt*100:>+6.2f}%  {mp:>6.1f}%")
+        rows.append(dict(
+            N=n, Model='Persistence',
+            Mean_Base=round(mb*100, 2), Std_Base=round(sb*100, 2),
+            Mean_Sel=round(ms*100, 2) if not np.isnan(ms) else None,
+            Std_Sel=round(ss*100, 2)  if not np.isnan(ss) else None,
+            Mean_Delta=round(dt*100, 2) if not np.isnan(dt) else None,
+            Mean_Pct=round(mp, 1)    if not np.isnan(mp) else None,
+        ))
+
 results = pd.DataFrame(rows)
 results.to_csv('results/walk_forward.csv', index=False)
 
@@ -156,14 +198,18 @@ fig.suptitle(f'Walk-Forward Validation ({N_SPLITS} folds) — Base vs Selective 
              fontsize=12)
 colors = {5: '#e74c3c', 10: '#3498db', 20: '#2ecc71'}
 
-for ax, model_name in zip(axes, ['Random Forest', 'XGBoost']):
-    sub = results[results['Model'] == model_name]
-    x   = sub['N'].values
+for ax, model_name in zip(axes, ['Random Forest', 'HGB']):
+    sub  = results[results['Model'] == model_name]
+    pers = results[results['Model'] == 'Persistence']
+    x    = sub['N'].values
 
     ax.errorbar(x - 0.3, sub['Mean_Base'], yerr=sub['Std_Base'],
                 fmt='o--', label='Baseline', color='#aaaaaa', capsize=4, linewidth=2)
     ax.errorbar(x + 0.3, sub['Mean_Sel'], yerr=sub['Std_Sel'],
                 fmt='s-', label=f'Selective (t={CONF_THRESHOLD})', color='#3498db', capsize=4, linewidth=2)
+    if len(pers) > 0:
+        ax.errorbar(x, pers['Mean_Sel'].values, yerr=pers['Std_Sel'].values,
+                    fmt='^:', label='Persistence (matched cov)', color='#e67e22', capsize=4, linewidth=1.5)
 
     ax.set_title(model_name)
     ax.set_xlabel('N (days ahead)')
@@ -173,6 +219,7 @@ for ax, model_name in zip(axes, ['Random Forest', 'XGBoost']):
     ax.grid(True, alpha=0.25)
 
 plt.tight_layout()
-plt.savefig('results/walk_forward.png', dpi=150)
+import os; os.makedirs('vix paper', exist_ok=True)
+plt.savefig('vix paper/walk_forward.png', dpi=150)
 plt.close()
-print("Plot saved → results/walk_forward.png")
+print("Plot saved → vix paper/walk_forward.png")

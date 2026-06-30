@@ -6,6 +6,8 @@ import warnings
 warnings.filterwarnings('ignore')
 from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestClassifier, HistGradientBoostingClassifier
+from sklearn.calibration import CalibratedClassifierCV
+from sklearn.model_selection import TimeSeriesSplit
 from sklearn.metrics import accuracy_score, precision_score, recall_score
 import matplotlib.pyplot as plt
 
@@ -24,9 +26,13 @@ VIX_THRESHOLDS = [18, 20, 22]
 N_VALUES       = [5, 10, 15, 20, 25]
 CONF_THRESHOLD = 0.25
 
+tscv = TimeSeriesSplit(n_splits=5)
+
 MODELS = {
-    'Random Forest': RandomForestClassifier(n_estimators=100, random_state=42),
-    'XGBoost':       HistGradientBoostingClassifier(max_iter=100, random_state=42),
+    'Random Forest': RandomForestClassifier(n_estimators=200, max_depth=10,
+                                            min_samples_leaf=5, random_state=42),
+    'XGBoost':       HistGradientBoostingClassifier(max_iter=200, max_depth=5,
+                                                    learning_rate=0.1, random_state=42),
 }
 
 rows = []
@@ -62,12 +68,19 @@ for vix_thresh in VIX_THRESHOLDS:
         print(f"  {'Model':<18} {'Base Acc':>9} {'Sel Acc':>9} {'ΔAcc':>7} {'%Days':>7}")
         print(f"  {'─'*52}")
 
-        for model_name, model in MODELS.items():
-            model.fit(X_train, y_train)
-            proba  = model.predict_proba(X_test)[:, 1]
-            y_pred = (proba >= 0.5).astype(int)
+        for model_name, model_spec in MODELS.items():
+            from sklearn.base import clone
+            # Baseline: uncalibrated
+            base_mdl = clone(model_spec)
+            base_mdl.fit(X_train, y_train)
+            y_pred_base = base_mdl.predict(X_test)
+            base_acc = accuracy_score(y_test, y_pred_base)
 
-            base_acc = accuracy_score(y_test, y_pred)
+            # Selective: calibrated
+            cal_mdl = CalibratedClassifierCV(clone(model_spec), cv=tscv, method='isotonic')
+            cal_mdl.fit(X_train, y_train)
+            proba  = cal_mdl.predict_proba(X_test)[:, 1]
+            y_pred = (proba >= 0.5).astype(int)
 
             mask      = (proba > 0.5 + CONF_THRESHOLD) | (proba < 0.5 - CONF_THRESHOLD)
             n_sel     = int(mask.sum())

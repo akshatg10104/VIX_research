@@ -1,0 +1,9 @@
+N,Transition,N_days,Coverage_pct,Accuracy
+5,bull_bull,749,88.8,100.0
+5,bull_bear,25,68.0,0.0
+5,bear_bull,30,26.7,75.0
+5,bear_bear,195,27.2,79.2
+10,bull_bull,730,86.2,100.0
+10,bull_bear,39,71.8,0.0
+10,bear_bull,49,20.4,90.0
+10,bear_bear,180,8.3,60.0
