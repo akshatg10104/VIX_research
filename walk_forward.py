@@ -115,13 +115,17 @@ for n in N_VALUES:
                 fold_pct.append(pct_sel)
 
             # ── Persistence baseline at RF-matched coverage (only computed once per fold) ──
+            # c calibrated on the fold's TRAINING window to match the RF's
+            # training coverage rate, then frozen and applied to the fold test set
             if model_name == 'Random Forest' and n_sel >= 20:
                 vix_test      = vix[test_idx]
                 persist_pred  = (vix_test >= 20).astype(int)
                 dist          = np.abs(vix_test - 20)
-                # threshold c so that exactly n_sel days are covered
-                sorted_dist   = np.sort(dist)[::-1]
-                c_thresh      = sorted_dist[min(n_sel, len(sorted_dist)) - 1]
+                proba_tr_wf   = cal.predict_proba(X_train)[:, 1]
+                cov_tr_wf     = ((proba_tr_wf > 0.5 + CONF_THRESHOLD) |
+                                 (proba_tr_wf < 0.5 - CONF_THRESHOLD)).mean()
+                vix_train_wf  = vix[train_idx]
+                c_thresh      = np.quantile(np.abs(vix_train_wf - 20), 1 - cov_tr_wf)
                 p_mask        = dist >= c_thresh
                 p_base_acc    = accuracy_score(y_test, persist_pred)
                 p_sel_acc     = accuracy_score(y_test[p_mask], persist_pred[p_mask]) if p_mask.sum() >= 10 else float('nan')

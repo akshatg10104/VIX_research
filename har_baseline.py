@@ -53,30 +53,6 @@ TAU      = 0.25
 N_VALUES = [5, 10, 15, 20, 25]
 tscv     = TimeSeriesSplit(n_splits=5)
 
-def find_persist_c(vix_vals, n_target):
-    """Binary search for c such that |VIX - 20| >= c gives ~n_target covered days."""
-    lo, hi = 0.0, 25.0
-    for _ in range(60):
-        mid = (lo + hi) / 2
-        n_c = int(np.sum(np.abs(vix_vals - 20) >= mid))
-        if n_c > n_target:
-            lo = mid
-        else:
-            hi = mid
-    return mid
-
-def block_bootstrap_gap(y_true, acc_rf, acc_base, n_bootstrap=2000, block_len=30):
-    """Bootstrap CI on (acc_rf - acc_base) using paired block resampling."""
-    n = len(y_true)
-    diffs = []
-    for _ in range(n_bootstrap):
-        starts = np.random.randint(0, max(1, n - block_len + 1),
-                                   size=int(np.ceil(n / block_len)))
-        idx = np.concatenate([np.arange(s, min(s + block_len, n)) for s in starts])[:n]
-        diffs.append(acc_rf - acc_base)
-    diffs = np.array(diffs)
-    return np.percentile(diffs, 2.5), np.percentile(diffs, 97.5)
-
 rows = []
 print("Computing extended baselines...")
 
@@ -114,8 +90,14 @@ for n in N_VALUES:
     y_pred_rf = (proba_rf >= 0.5).astype(int)
     rf_acc   = accuracy_score(y_te[mask_rf], y_pred_rf[mask_rf]) * 100 if n_rf >= 10 else np.nan
 
-    # ── Persistence ───────────────────────────────────────────────────────────
-    c = find_persist_c(vix_te, n_rf)
+    # RF training coverage rate — all baseline coverage matching is calibrated
+    # against this on training data only, then frozen
+    proba_rf_tr = cal_rf.predict_proba(X_tr_s)[:, 1]
+    cov_rf_tr   = ((proba_rf_tr > 0.5 + TAU) | (proba_rf_tr < 0.5 - TAU)).mean()
+    vix_tr      = vix_v[:split_idx]
+
+    # ── Persistence (c calibrated on training window, frozen) ─────────────────
+    c = np.quantile(np.abs(vix_tr - 20), 1 - cov_rf_tr)
     mask_per  = np.abs(vix_te - 20) >= c
     y_per     = (vix_te >= 20).astype(int)
     per_acc   = accuracy_score(y_te[mask_per], y_per[mask_per]) * 100 if mask_per.sum() >= 10 else np.nan
@@ -128,12 +110,10 @@ for n in N_VALUES:
     cal_vix    = CalibratedClassifierCV(lr_vix, cv=tscv, method='isotonic')
     cal_vix.fit(vix_tr_s, y_tr)
     proba_vix  = cal_vix.predict_proba(vix_te_s)[:, 1]
-    mask_vix   = (proba_vix > 0.5 + TAU) | (proba_vix < 0.5 - TAU)
-    # use same n_rf coverage
-    # find threshold to match coverage
-    sorted_gaps = np.sort(np.abs(proba_vix - 0.5))[::-1]
-    thresh_vix  = sorted_gaps[min(n_rf, len(sorted_gaps)) - 1] if n_rf > 0 else TAU
-    mask_vix_m  = np.abs(proba_vix - 0.5) >= thresh_vix
+    # coverage-match threshold calibrated on TRAINING probabilities, frozen
+    proba_vix_tr = cal_vix.predict_proba(vix_tr_s)[:, 1]
+    thresh_vix   = np.quantile(np.abs(proba_vix_tr - 0.5), 1 - cov_rf_tr)
+    mask_vix_m   = np.abs(proba_vix - 0.5) >= thresh_vix
     y_pred_vix  = (proba_vix >= 0.5).astype(int)
     lr_acc      = accuracy_score(y_te[mask_vix_m], y_pred_vix[mask_vix_m]) * 100 if mask_vix_m.sum() >= 10 else np.nan
 
@@ -142,8 +122,9 @@ for n in N_VALUES:
     cal_har   = CalibratedClassifierCV(lr_har, cv=tscv, method='isotonic')
     cal_har.fit(X_har_tr_s, y_tr)
     proba_har = cal_har.predict_proba(X_har_te_s)[:, 1]
-    sorted_har = np.sort(np.abs(proba_har - 0.5))[::-1]
-    thresh_har = sorted_har[min(n_rf, len(sorted_har)) - 1] if n_rf > 0 else TAU
+    # coverage-match threshold calibrated on TRAINING probabilities, frozen
+    proba_har_tr = cal_har.predict_proba(X_har_tr_s)[:, 1]
+    thresh_har = np.quantile(np.abs(proba_har_tr - 0.5), 1 - cov_rf_tr)
     mask_har   = np.abs(proba_har - 0.5) >= thresh_har
     y_pred_har = (proba_har >= 0.5).astype(int)
     har_acc    = accuracy_score(y_te[mask_har], y_pred_har[mask_har]) * 100 if mask_har.sum() >= 10 else np.nan
@@ -165,8 +146,10 @@ for n in N_VALUES:
     # Prob of high at t+N given current state
     cur_state = (vix_te >= 20).astype(int)
     proba_mc  = np.where(cur_state == 0, Pn[0, 1], Pn[1, 1])
-    sorted_mc = np.sort(np.abs(proba_mc - 0.5))[::-1]
-    thresh_mc = sorted_mc[min(n_rf, len(sorted_mc)) - 1] if n_rf > 0 else TAU
+    # coverage-match threshold calibrated on TRAINING states, frozen
+    cur_state_tr = (vix_tr >= 20).astype(int)
+    proba_mc_tr  = np.where(cur_state_tr == 0, Pn[0, 1], Pn[1, 1])
+    thresh_mc = np.quantile(np.abs(proba_mc_tr - 0.5), 1 - cov_rf_tr)
     mask_mc   = np.abs(proba_mc - 0.5) >= thresh_mc
     y_pred_mc = (proba_mc >= 0.5).astype(int)
     mc_acc    = accuracy_score(y_te[mask_mc], y_pred_mc[mask_mc]) * 100 if mask_mc.sum() >= 10 else np.nan

@@ -54,6 +54,7 @@ rows_extended = []   # for extended baseline CSV (adds HAR + Markov)
 proba_store = {}
 y_store     = {}
 vix_store   = {}
+c_store     = {}   # training-calibrated persistence cutoff per horizon
 
 print(f"{'═'*88}")
 print("  PERSISTENCE BASELINE  vs  RF SELECTIVE  (all using same fresh RF spec)")
@@ -73,8 +74,9 @@ for n in N_VALUES:
     X_train_raw, X_test_raw = X[:split_idx], X[split_idx:]
     y_train, y_test         = y[:split_idx], y[split_idx:]
 
-    test_idx = sub.index[split_idx:]
-    vix_test = df.loc[test_idx, 'VIX'].values
+    test_idx  = sub.index[split_idx:]
+    vix_test  = df.loc[test_idx, 'VIX'].values
+    vix_train_arr = df.loc[sub.index[:split_idx], 'VIX'].values
 
     # ── Fresh RF (used for ALL comparisons including bootstrap) ──────────────
     print(f"  N={n} fitting RF...", end=' ', flush=True)
@@ -93,18 +95,28 @@ for n in N_VALUES:
     cov_rf    = mask_rf.mean()
     n_rf      = int(mask_rf.sum())
 
+    # RF coverage rate on the TRAINING window — all baseline coverage matching
+    # is calibrated against this rate on training data only, then frozen
+    proba_rf_tr = cal_rf.predict_proba(X_tr)[:, 1]
+    mask_rf_tr  = (proba_rf_tr > 0.5 + TAU) | (proba_rf_tr < 0.5 - TAU)
+    cov_rf_tr   = mask_rf_tr.mean()
+
     # Store for bootstrap
     proba_store[n] = proba_rf
     y_store[n]     = y_test
     vix_store[n]   = vix_test
 
-    # ── 1. Persistence baseline matched to ACTUAL RF coverage ────────────────
+    # ── 1. Persistence baseline at matched coverage ──────────────────────────
+    # c is calibrated on the TRAINING window to match the RF's training
+    # coverage rate, then frozen and applied unchanged to the test window
     best_c, best_diff = 0.0, float('inf')
     for c in np.arange(0, 15, 0.1):
-        m = np.abs(vix_test - VIX_THRESH) >= c
-        d = abs(int(m.sum()) - n_rf)
+        m_tr = np.abs(vix_train_arr - VIX_THRESH) >= c
+        d = abs(m_tr.mean() - cov_rf_tr)
         if d < best_diff:
             best_diff, best_c = d, c
+
+    c_store[n] = best_c
 
     mask_p   = np.abs(vix_test - VIX_THRESH) >= best_c
     y_pred_p = (vix_test[mask_p] >= VIX_THRESH).astype(int)
@@ -166,9 +178,9 @@ for n in N_VALUES:
     cal_har    = CalibratedClassifierCV(clone(lr_har), cv=tscv, method='isotonic')
     cal_har.fit(X_har_tr_s, y_train)
     proba_har  = cal_har.predict_proba(X_har_te_s)[:, 1]
-    # match coverage to RF
-    gaps_har   = np.sort(np.abs(proba_har - 0.5))[::-1]
-    thresh_har = gaps_har[min(n_rf, len(gaps_har)) - 1] if n_rf > 0 else TAU
+    # coverage-match threshold calibrated on TRAINING probabilities, frozen
+    proba_har_tr = cal_har.predict_proba(X_har_tr_s)[:, 1]
+    thresh_har = np.quantile(np.abs(proba_har_tr - 0.5), 1 - cov_rf_tr)
     mask_har   = np.abs(proba_har - 0.5) >= thresh_har
     y_pred_har = (proba_har >= 0.5).astype(int)
     acc_har = accuracy_score(y_test[mask_har], y_pred_har[mask_har]) if mask_har.sum() >= 10 else np.nan
@@ -185,8 +197,10 @@ for n in N_VALUES:
     Pn  = np.linalg.matrix_power(P, n)
     cur_state_te = (vix_test >= VIX_THRESH).astype(int)
     proba_mc     = np.where(cur_state_te == 0, Pn[0, 1], Pn[1, 1])
-    gaps_mc      = np.sort(np.abs(proba_mc - 0.5))[::-1]
-    thresh_mc    = gaps_mc[min(n_rf, len(gaps_mc)) - 1] if n_rf > 0 else TAU
+    # coverage-match threshold calibrated on TRAINING states, frozen
+    cur_state_tr = (vix_train_arr >= VIX_THRESH).astype(int)
+    proba_mc_tr  = np.where(cur_state_tr == 0, Pn[0, 1], Pn[1, 1])
+    thresh_mc    = np.quantile(np.abs(proba_mc_tr - 0.5), 1 - cov_rf_tr)
     mask_mc      = np.abs(proba_mc - 0.5) >= thresh_mc
     y_pred_mc    = (proba_mc >= 0.5).astype(int)
     acc_mc       = accuracy_score(y_test[mask_mc], y_pred_mc[mask_mc]) if mask_mc.sum() >= 10 else np.nan
@@ -245,23 +259,20 @@ print(f"\nExtended baselines:")
 print(extended_df.to_string(index=False))
 
 # ── Block-bootstrap CI on (RF - Persistence) gap ─────────────────────────────
-def block_bootstrap_gap(y_true, proba_rf, vix_vals, n_bootstrap=2000, rng=None):
+def block_bootstrap_gap(y_true, proba_rf, vix_vals, c_frozen,
+                        n_bootstrap=2000, rng=None, block_len=None):
+    """c_frozen is the training-calibrated persistence cutoff — no test-set
+    information is used to define either prediction set."""
     if rng is None:
         rng = np.random.default_rng(42)
-    N_test    = len(y_true)
-    block_len = max(int(N_test**0.5), 20)
+    N_test = len(y_true)
+    if block_len is None:
+        block_len = max(int(N_test**0.5), 20)
 
     mask_rf   = (proba_rf > 0.5 + TAU) | (proba_rf < 0.5 - TAU)
     y_pred_rf = (proba_rf >= 0.5).astype(int)
-    n_rf      = int(mask_rf.sum())
 
-    best_c, best_diff = 0.0, float('inf')
-    for c in np.arange(0, 15, 0.1):
-        m = np.abs(vix_vals - VIX_THRESH) >= c
-        d = abs(int(m.sum()) - n_rf)
-        if d < best_diff:
-            best_diff, best_c = d, c
-    mask_p    = np.abs(vix_vals - VIX_THRESH) >= best_c
+    mask_p    = np.abs(vix_vals - VIX_THRESH) >= c_frozen
     y_pred_p  = (vix_vals >= VIX_THRESH).astype(int)
 
     acc_rf_pt = accuracy_score(y_true[mask_rf], y_pred_rf[mask_rf])
@@ -293,7 +304,8 @@ boot_rows = []
 
 for n in N_VALUES:
     print(f"  N={n} bootstrapping...", end=' ', flush=True)
-    gap, lo, hi = block_bootstrap_gap(y_store[n], proba_store[n], vix_store[n], rng=rng)
+    gap, lo, hi = block_bootstrap_gap(y_store[n], proba_store[n], vix_store[n],
+                                      c_store[n], rng=rng)
     sig = '  ← borderline' if -0.5 < lo <= 0 else ('  * p<0.05' if lo > 0 else '')
     print(f"  gap={gap:+.2f}pp  95% CI [{lo:+.2f}, {hi:+.2f}]{sig}")
     boot_rows.append(dict(N=n, Gap_pp=round(gap, 2),
@@ -303,6 +315,26 @@ for n in N_VALUES:
 boot_df = pd.DataFrame(boot_rows)
 boot_df.to_csv('results/bootstrap_ci.csv', index=False)
 print("  Saved → results/bootstrap_ci.csv")
+
+# ── Block-length sensitivity (editor Major 4): 32 / 60 / 90 days ─────────────
+print(f"\n{'═'*88}")
+print("  BLOCK-LENGTH SENSITIVITY  (Editor Major 4)")
+print(f"{'═'*88}")
+sens_rows = []
+for blk in [None, 60, 90]:
+    for n in N_VALUES:
+        gap, lo, hi = block_bootstrap_gap(y_store[n], proba_store[n], vix_store[n],
+                                          c_store[n], rng=np.random.default_rng(42),
+                                          block_len=blk)
+        blk_label = blk if blk is not None else max(int(len(y_store[n])**0.5), 20)
+        sens_rows.append(dict(Block_len=blk_label, N=n, Gap_pp=round(gap, 2),
+                              CI_lo=round(lo, 2), CI_hi=round(hi, 2),
+                              Significant=(lo > 0)))
+        print(f"  block={blk_label:>3}  N={n:2d}  gap={gap:+.2f}pp  "
+              f"95% CI [{lo:+.2f}, {hi:+.2f}]")
+
+pd.DataFrame(sens_rows).to_csv('results/bootstrap_blocklen_sensitivity.csv', index=False)
+print("  Saved → results/bootstrap_blocklen_sensitivity.csv")
 
 # ── Transition summary print ──────────────────────────────────────────────────
 print(f"\n{'═'*88}")

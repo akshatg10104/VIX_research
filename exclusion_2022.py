@@ -79,6 +79,11 @@ for n in [5, 10, 15, 20, 25]:
     n_sel    = sel_mask.sum()
     rf_sel   = accuracy_score(y_te[sel_mask], y_pred[sel_mask]) * 100 if n_sel >= 10 else np.nan
 
+    # RF training coverage rate — baseline coverage matching is calibrated on
+    # training data only, then frozen
+    proba_tr_rf = cal.predict_proba(X_tr)[:, 1]
+    cov_rf_tr   = ((proba_tr_rf > 0.5 + TAU) | (proba_tr_rf < 0.5 - TAU)).mean()
+
     # ── HAR-LR ────────────────────────────────────────────────────────────────
     vix_all  = np.concatenate([vix_tr, vix_te])
     vix_w    = pd.Series(vix_all).rolling(5,  min_periods=1).mean().values
@@ -94,17 +99,16 @@ for n in [5, 10, 15, 20, 25]:
     proba_har  = cal_har.predict_proba(X_har_te_s)[:, 1]
     y_pred_har = (proba_har >= 0.5).astype(int)
 
-    # Match HAR coverage to RF
-    gaps_har   = np.sort(np.abs(proba_har - 0.5))[::-1]
-    thresh_har = gaps_har[min(n_sel, len(gaps_har)) - 1] if n_sel > 0 else TAU
-    mask_har   = np.abs(proba_har - 0.5) >= thresh_har
+    # Match HAR coverage to RF — threshold from TRAINING probabilities, frozen
+    proba_har_tr = cal_har.predict_proba(X_har_tr_s)[:, 1]
+    thresh_har   = np.quantile(np.abs(proba_har_tr - 0.5), 1 - cov_rf_tr)
+    mask_har     = np.abs(proba_har - 0.5) >= thresh_har
     har_acc    = accuracy_score(y_te[mask_har], y_pred_har[mask_har]) * 100 if mask_har.sum() >= 10 else np.nan
 
-    # ── Persistence ───────────────────────────────────────────────────────────
+    # ── Persistence (c calibrated on training window, frozen) ─────────────────
     y_pers = (vix_te >= 20).astype(int)
     dist   = np.abs(vix_te - 20)
-    sorted_d = np.sort(dist)[::-1]
-    c_thresh = sorted_d[min(n_sel, len(sorted_d)) - 1] if n_sel > 0 else TAU
+    c_thresh = np.quantile(np.abs(vix_tr - 20), 1 - cov_rf_tr)
     p_mask   = dist >= c_thresh
     pers_acc = accuracy_score(y_te[p_mask], y_pers[p_mask]) * 100 if p_mask.sum() >= 10 else np.nan
 

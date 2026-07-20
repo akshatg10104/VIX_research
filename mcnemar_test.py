@@ -44,6 +44,7 @@ for n in [5, 10, 15, 20, 25]:
     X_tr_raw, X_te_raw = X[:split_idx], X[split_idx:]
     y_tr, y_te         = y[:split_idx], y[split_idx:]
     vix_te             = vix[split_idx:]
+    vix_tr             = vix[:split_idx]
 
     scaler = StandardScaler()
     X_tr   = scaler.fit_transform(X_tr_raw)
@@ -60,11 +61,13 @@ for n in [5, 10, 15, 20, 25]:
     rf_mask = (proba > 0.5 + TAU) | (proba < 0.5 - TAU)
     n_rf    = rf_mask.sum()
 
-    # Persistence at matched coverage
-    dist     = np.abs(vix_te - 20)
-    sorted_d = np.sort(dist)[::-1]
-    c_thresh = sorted_d[min(n_rf, len(sorted_d)) - 1] if n_rf > 0 else TAU
-    p_mask   = dist >= c_thresh
+    # Persistence at matched coverage — c calibrated on TRAINING window to
+    # match the RF's training coverage rate, then frozen and applied to test
+    proba_tr    = cal.predict_proba(X_tr)[:, 1]
+    cov_rf_tr   = ((proba_tr > 0.5 + TAU) | (proba_tr < 0.5 - TAU)).mean()
+    c_thresh    = np.quantile(np.abs(vix_tr - 20), 1 - cov_rf_tr)
+    dist        = np.abs(vix_te - 20)
+    p_mask      = dist >= c_thresh
     y_pers   = (vix_te >= 20).astype(int)
 
     # Jointly covered days

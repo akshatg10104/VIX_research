@@ -213,8 +213,11 @@ for col_idx, n in enumerate(N_EVAL):
     y_pred_rf = (proba_rf >= 0.5).astype(int)
     acc_rf_pt = accuracy_score(y_te[mask_rf], y_pred_rf[mask_rf]) if n_rf >= 10 else np.nan
 
-    gaps_har  = np.sort(np.abs(proba_har - 0.5))[::-1]
-    thresh_har = gaps_har[min(n_rf, len(gaps_har)) - 1] if n_rf > 0 else TAU
+    # HAR coverage-match threshold calibrated on TRAINING probabilities, frozen
+    proba_rf_tr  = cal_rf.predict_proba(X_tr)[:, 1]
+    cov_rf_tr    = ((proba_rf_tr > 0.5 + TAU) | (proba_rf_tr < 0.5 - TAU)).mean()
+    proba_har_tr = cal_har.predict_proba(X_har_tr_s)[:, 1]
+    thresh_har = np.quantile(np.abs(proba_har_tr - 0.5), 1 - cov_rf_tr)
     mask_har_m = np.abs(proba_har - 0.5) >= thresh_har
     y_pred_har = (proba_har >= 0.5).astype(int)
     acc_har_pt = accuracy_score(y_te[mask_har_m], y_pred_har[mask_har_m]) if mask_har_m.sum() >= 10 else np.nan

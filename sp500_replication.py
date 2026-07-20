@@ -116,12 +116,18 @@ for n in [5, 10, 15, 20, 25]:
     rf_bal   = balanced_accuracy_score(y_te[sel_mask], y_pred[sel_mask]) * 100 if n_sel >= 10 else np.nan
     rf_cov   = sel_mask.mean() * 100
 
-    # ── Persistence baseline ───────────────────────────────────────────────
+    # RF training coverage rate — baseline coverage matching is calibrated on
+    # training data only, then frozen
+    proba_tr_rf = cal.predict_proba(X_tr_s)[:, 1]
+    cov_rf_tr   = ((proba_tr_rf > 0.5 + TAU) | (proba_tr_rf < 0.5 - TAU)).mean()
+
+    # ── Persistence baseline (c calibrated on training window, frozen) ─────
+    # distance measured as a fraction of MA200 so the threshold is scale-free
+    # across the 2006–2026 index-level range
     y_pers   = bear_te.copy()
-    dist     = np.abs(sp500_sub.iloc[split_idx:].values - ma200_sub.iloc[split_idx:].values)
-    # Normalize distance
-    sorted_d = np.sort(dist)[::-1]
-    c_thresh = sorted_d[min(n_sel, len(sorted_d)) - 1] if n_sel > 0 else 1.0
+    dist     = np.abs(sp500_sub.iloc[split_idx:].values / ma200_sub.iloc[split_idx:].values - 1)
+    dist_tr  = np.abs(sp500_sub.iloc[:split_idx].values / ma200_sub.iloc[:split_idx].values - 1)
+    c_thresh = np.nanquantile(dist_tr, 1 - cov_rf_tr)
     p_mask   = dist >= c_thresh
     pers_acc = accuracy_score(y_te[p_mask], y_pers[p_mask]) * 100 if p_mask.sum() >= 10 else np.nan
 
@@ -146,10 +152,10 @@ for n in [5, 10, 15, 20, 25]:
     proba_har  = cal_har.predict_proba(X_har_te_s)[:, 1]
     y_pred_har = (proba_har >= 0.5).astype(int)
 
-    # Match HAR to RF coverage
-    gaps_har   = np.sort(np.abs(proba_har - 0.5))[::-1]
-    thresh_har = gaps_har[min(n_sel, len(gaps_har)) - 1] if n_sel > 0 else TAU
-    mask_har   = np.abs(proba_har - 0.5) >= thresh_har
+    # Match HAR to RF coverage — threshold from TRAINING probabilities, frozen
+    proba_har_tr = cal_har.predict_proba(X_har_tr_s)[:, 1]
+    thresh_har   = np.quantile(np.abs(proba_har_tr - 0.5), 1 - cov_rf_tr)
+    mask_har     = np.abs(proba_har - 0.5) >= thresh_har
     har_acc    = accuracy_score(y_te[mask_har], y_pred_har[mask_har]) * 100 if mask_har.sum() >= 10 else np.nan
 
     rf_minus_persist = (rf_sel - pers_acc) if not (np.isnan(rf_sel) or np.isnan(pers_acc)) else np.nan
