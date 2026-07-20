@@ -296,45 +296,31 @@ def block_bootstrap_gap(y_true, proba_rf, vix_vals, c_frozen,
     lo, hi = np.percentile(diffs, [2.5, 97.5])
     return gap, lo, hi
 
+# One bootstrap procedure feeds both the headline CI table and the block-length
+# sensitivity table: identical calls (fresh seed 42 per horizon), so the
+# block-32 rows in the two tables are the same numbers by construction.
 print(f"\n{'═'*88}")
-print("  BLOCK-BOOTSTRAP 95% CI  (2000 reps, block length ≈ 30 days)")
+print("  BLOCK-BOOTSTRAP 95% CI  (2000 reps; block lengths 32 / 60 / 90 days)")
 print(f"{'═'*88}")
-rng      = np.random.default_rng(42)
-boot_rows = []
-
-for n in N_VALUES:
-    print(f"  N={n} bootstrapping...", end=' ', flush=True)
-    gap, lo, hi = block_bootstrap_gap(y_store[n], proba_store[n], vix_store[n],
-                                      c_store[n], rng=rng)
-    sig = '  ← borderline' if -0.5 < lo <= 0 else ('  * p<0.05' if lo > 0 else '')
-    print(f"  gap={gap:+.2f}pp  95% CI [{lo:+.2f}, {hi:+.2f}]{sig}")
-    boot_rows.append(dict(N=n, Gap_pp=round(gap, 2),
-                          CI_lo=round(lo, 2), CI_hi=round(hi, 2),
-                          Significant=(lo > 0)))
-
-boot_df = pd.DataFrame(boot_rows)
-boot_df.to_csv('results/bootstrap_ci.csv', index=False)
-print("  Saved → results/bootstrap_ci.csv")
-
-# ── Block-length sensitivity (editor Major 4): 32 / 60 / 90 days ─────────────
-print(f"\n{'═'*88}")
-print("  BLOCK-LENGTH SENSITIVITY  (Editor Major 4)")
-print(f"{'═'*88}")
-sens_rows = []
-for blk in [None, 60, 90]:
+boot_rows, sens_rows = [], []
+for blk in [32, 60, 90]:
     for n in N_VALUES:
         gap, lo, hi = block_bootstrap_gap(y_store[n], proba_store[n], vix_store[n],
                                           c_store[n], rng=np.random.default_rng(42),
                                           block_len=blk)
-        blk_label = blk if blk is not None else max(int(len(y_store[n])**0.5), 20)
-        sens_rows.append(dict(Block_len=blk_label, N=n, Gap_pp=round(gap, 2),
+        sens_rows.append(dict(Block_len=blk, N=n, Gap_pp=round(gap, 2),
                               CI_lo=round(lo, 2), CI_hi=round(hi, 2),
                               Significant=(lo > 0)))
-        print(f"  block={blk_label:>3}  N={n:2d}  gap={gap:+.2f}pp  "
+        if blk == 32:
+            boot_rows.append(dict(N=n, Gap_pp=round(gap, 2),
+                                  CI_lo=round(lo, 2), CI_hi=round(hi, 2),
+                                  Significant=(lo > 0)))
+        print(f"  block={blk:>3}  N={n:2d}  gap={gap:+.2f}pp  "
               f"95% CI [{lo:+.2f}, {hi:+.2f}]")
 
+pd.DataFrame(boot_rows).to_csv('results/bootstrap_ci.csv', index=False)
 pd.DataFrame(sens_rows).to_csv('results/bootstrap_blocklen_sensitivity.csv', index=False)
-print("  Saved → results/bootstrap_blocklen_sensitivity.csv")
+print("  Saved → results/bootstrap_ci.csv, results/bootstrap_blocklen_sensitivity.csv")
 
 # ── Transition summary print ──────────────────────────────────────────────────
 print(f"\n{'═'*88}")

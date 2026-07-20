@@ -164,6 +164,7 @@ for n in [5, 10, 15, 20, 25]:
 
     base_rows.append(dict(N=n, BaseRate=round(base_rate, 1),
                           Coverage=round(rf_cov, 1),
+                          Persist_Cov=round(p_mask.mean() * 100, 1),
                           Persistence=round(pers_acc, 1) if not np.isnan(pers_acc) else np.nan,
                           HAR_LR=round(har_acc, 1) if not np.isnan(har_acc) else np.nan,
                           RF_Sel=round(rf_sel, 1) if not np.isnan(rf_sel) else np.nan,

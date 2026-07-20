@@ -1,67 +1,66 @@
-# VIX Regime Classification Research Project
+# Selective Prediction and the Persistence Illusion: A Diagnostic Decomposition of VIX Regime Classification
 
-## Researcher
-Akshat Gupta — High School Junior, TAMS (Texas Academy of Mathematics and Science)
-Research conducted under Professor Jianguo Liu, University of North Texas
+Code and results for the paper (under review at the *Journal of Risk and Financial
+Management*, manuscript jrfm-4438773).
 
-## Research Question
-Can machine learning classify VIX volatility regimes and predict regime shifts 
-before they occur, using a selective predicting methodology adapted from Liu & 
-Jiang (2020)?
+**Authors:** Akshat Gupta (Texas Academy of Mathematics and Science, University of North
+Texas) and Jianguo Liu (Department of Mathematics, University of North Texas).
 
-## Background
-This project directly extends the selective predicting methodology from:
-Liu, J. & Jiang, J. (2020). "Predicting Stock Market N-Days Ahead Using SVM 
-Optimized by Selective Thresholds." ICMLC 2020.
+The paper develops a six-component diagnostic protocol for evaluating confidence-based
+selective prediction on serially correlated labels, and demonstrates it on VIX regime
+classification (5,000 trading days, July 2006–May 2026) with a replication on S&P 500
+trend regimes.
 
-Instead of predicting NASDAQ direction, we apply selective predicting to VIX 
-regime classification — predicting when the market transitions from low 
-volatility (calm) to high volatility (panic) before it happens.
+## Requirements
 
-## Labels
-+1 = High volatility regime (VIX >= 20)
- 0 = Low volatility regime (VIX < 20)
+Python 3.9+ with: `pandas`, `numpy`, `scikit-learn`, `xgboost`, `torch` (LSTM only),
+`shap`, `matplotlib`.
 
-## Feature Categories
-1. VIX Derived Indicators — SMA, Momentum, ROC, Bollinger Bands, RSI, MA Crossover, StdDev
-2. Term Structure Features — VIX/VIX3M spread, VIX/VIX6M spread, slope
-3. Equity Market Features — SP500 returns, momentum, realized volatility, drawdown
-4. Cross Asset Fear Indicators — gold returns, treasury yield, dollar index
-5. Market Breadth Indicators — put call ratio (to be added later)
-6. Macro Features — fed funds rate, yield curve slope (to be added later)
+```
+pip install pandas numpy scikit-learn xgboost torch shap matplotlib
+```
 
-## Models to Compare
-- Logistic Regression (baseline)
-- Decision Tree
-- Random Forest
-- SVM (polynomial kernel degree 4, low C — mirroring Liu paper)
-- XGBoost
+## Reproducing the paper
 
-## Evaluation Metrics
-- Accuracy
-- Precision
-- Recall
-- Confusion Matrix
-- Feature Importance
+Run from the repository root. Steps 1–2 build the dataset; the analysis scripts are then
+independent of one another.
 
-## Timeline
-- Now → May: Data collection and feature engineering
-- June: Model training and comparison
-- July: Selective predicting implementation and results
-- August: Write up and paper draft
+1. `get_data.py`, `get_macro_data.py` — download raw market data (Yahoo Finance) and macro
+   series (FRED) → `data/raw_data.csv`
+2. `build_features.py` — construct the 36 engineered features and all horizon labels →
+   `data/features.csv`
 
-## Data Sources
-- VIX: Yahoo Finance (^VIX) — 1990 to present
-- VIX3M: Yahoo Finance (^VIX3M)
-- S&P 500: Yahoo Finance (^GSPC)
-- Gold: Yahoo Finance (GC=F)
-- 10Y Treasury: Yahoo Finance (^TNX)
-- Dollar Index: Yahoo Finance (DX-Y.NYB)
-- Fed Funds Rate: FRED
-- Credit Spreads: FRED
+| Script | Paper section / output |
+|---|---|
+| `confidence_selective_predicting.py` | Main selective accuracy results (§5.1) |
+| `tune_and_train.py`, `train_models.py` | Tuned model comparison |
+| `persistence_baseline.py` | Coverage-matched baselines, moving-block bootstrap CIs incl. block-length sensitivity, transition-conditional analysis (§5.2, §5.5, §5.9, Appendix D) |
+| `har_baseline.py` | Extended baseline table (persistence, LR, HAR-LR, Markov) |
+| `mcnemar_test.py` | McNemar test on jointly covered days (§5.9) |
+| `revision_experiments.py` | XGBoost benchmark, HAR forecast-then-threshold, risk–coverage curves + AURC, joint covered-set composition, AUC/Brier pre/post calibration, calm→high episode clustering, per-horizon sample sizes (§5.3, §5.10, §5.11, Appendices C and E) |
+| `persistence_quantify.py` | Empirical transition probabilities and same-regime decomposition (§5.4) |
+| `transition_reweight.py` | Cost-weighting experiment (§5.5) |
+| `abstention_analysis.py`, `abstention_confound.py` | Abstention leading-indicator analysis and proximity confound test (§5.5) |
+| `walk_forward.py` | 5-fold expanding walk-forward validation (§5.6) |
+| `lstm_model.py` | LSTM comparison (§5.7) |
+| `shap_analysis.py` | SHAP feature attribution (§5.8) |
+| `cost_utility.py` | Cost-weighted utility analysis (§5.12) |
+| `exclusion_2022.py` | 2022 bear-market exclusion robustness (§5.9) |
+| `optimize_threshold.py`, `robustness_check.py`, `sustained_labels.py` | Threshold sensitivity, VIX-threshold robustness (18/20/22), sustained labels (Appendix B) |
+| `sp500_replication.py` | S&P 500 trend-regime replication (§6) |
+| `event_case_studies.py` | Event case-study figure (§5.5) |
 
-## Goal
-Achieve higher accuracy than baseline threshold methods for VIX regime 
-classification, and demonstrate that selective predicting improves accuracy 
-by filtering out low signal days — extending Liu's methodology to volatility 
-regime prediction for financial risk management applications.
+Numerical outputs are written to `results/` (CSV) and figures to `vix paper/` (PNG).
+
+## Leakage-free baseline construction
+
+All coverage-matched baseline abstention thresholds (the persistence cutoff `c`, the
+probability-gap thresholds for the LR/HAR-LR/Markov baselines, and the HAR forecast band
+`d`) are calibrated on the **training window only** — as the training-window quantile that
+reproduces the Random Forest's training coverage rate at τ = 0.25 — and then frozen before
+any test-set evaluation. No test-set information (labels or inputs) enters baseline
+construction, model tuning, scaler fitting, or calibration.
+
+## License
+
+MIT — see `LICENSE`.
