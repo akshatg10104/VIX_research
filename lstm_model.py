@@ -97,15 +97,6 @@ def train_lstm(model, X_seq, y_seq, epochs=40, lr=1e-3, batch_size=64):
     return model
 
 
-def platt_scale(proba_raw, y_true):
-    """Simple Platt scaling (logistic fit on logit of raw proba) for calibration."""
-    from sklearn.linear_model import LogisticRegression
-    logit = np.log(np.clip(proba_raw, 1e-6, 1-1e-6) / (1 - np.clip(proba_raw, 1e-6, 1-1e-6)))
-    cal   = LogisticRegression(C=1e10)
-    cal.fit(logit.reshape(-1, 1), y_true)
-    return cal.predict_proba(logit.reshape(-1, 1))[:, 1]
-
-
 print(f"{'='*70}")
 print("  LSTM MODEL COMPARISON")
 print(f"{'='*70}")
@@ -161,7 +152,6 @@ for n in [5, 10]:
     model.eval()
     with torch.no_grad():
         proba_cal_in = model(torch.FloatTensor(X_tr_seq[cal_split:]).to(DEVICE)).cpu().numpy()
-    proba_lstm_cal = platt_scale(proba_raw, y_te_seq)
     # Use training holdout calibration
     from sklearn.isotonic import IsotonicRegression
     iso = IsotonicRegression(out_of_bounds='clip')
