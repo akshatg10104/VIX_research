@@ -139,7 +139,9 @@ for ax, n in zip(axes, [5, 10]):
     # Category legend
     legend_patches = [mpatches.Patch(color=v, label=k)
                       for k, v in CAT_COLORS.items()]
-    ax.legend(handles=legend_patches, loc='lower right', fontsize=8)
+    # anchored above the summary badge below, so the two never overlap
+    ax.legend(handles=legend_patches, loc='lower right',
+              bbox_to_anchor=(1.0, 0.14), fontsize=8, framealpha=0.9)
 
     # Fraction of total SHAP mass in VIX technical features
     total_shap = shap_dfs[n][0]['MeanAbsSHAP'].sum()
@@ -147,7 +149,7 @@ for ax, n in zip(axes, [5, 10]):
     ax.text(0.98, 0.02,
             f'VIX technical features:\n{vix_shap/total_shap*100:.0f}% of total SHAP mass',
             transform=ax.transAxes, ha='right', va='bottom',
-            fontsize=9, bbox=dict(boxstyle='round', facecolor='#ffe0e0', alpha=0.8))
+            fontsize=9, bbox=dict(boxstyle='round', facecolor='#ffe0e0', alpha=0.9))
 
 plt.tight_layout()
 plt.savefig('vix paper/shap_analysis.png', bbox_inches='tight')

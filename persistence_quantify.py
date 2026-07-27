@@ -147,7 +147,7 @@ bars = ax.bar(ns, results['Persistence_ratio'], color='#9b59b6', alpha=0.8,
               edgecolor='white', linewidth=0.5)
 for bar, v in zip(bars, results['Persistence_ratio']):
     ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.05,
-            f'{v:.1f}x', ha='center', va='bottom', fontsize=10)
+            f'{v:.2f}x', ha='center', va='bottom', fontsize=10)
 ax.set_xlabel('Prediction horizon N (days)')
 ax.set_ylabel('P(high|high) / P(high|calm)')
 ax.set_title('Persistence Ratio\n(how much more likely high→high vs calm→high)')
