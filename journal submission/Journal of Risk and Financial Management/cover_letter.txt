@@ -1,0 +1,58 @@
+Dear Editor,
+
+We are pleased to submit our manuscript titled "Selective Prediction and the Persistence
+Illusion: A Diagnostic Decomposition of VIX Regime Classification" for consideration for
+publication in the Journal of Risk and Financial Management.
+
+This paper addresses a methodological issue of direct relevance to practitioners and researchers
+in financial risk management: the reliability of machine learning-based regime classification
+systems. We develop a six-component diagnostic protocol and apply it to VIX regime prediction
+across 5,000 trading days (July 2006–May 2026), demonstrating that confidence-based selective
+prediction achieves apparent accuracy of 90–93% not through genuine predictive skill, but through
+a mechanism we term the "persistence illusion"—the concentration of predictions on
+autocorrelation-stable days.
+
+Our key findings are:
+
+1. A three-feature HAR-style logistic regression matches or exceeds a 36-feature Random Forest
+   at four of five prediction horizons under bootstrap testing, meaning the additional 33 features
+   contribute negligibly.
+
+2. A McNemar test on jointly covered days finds b = c = 0 at N ≥ 10: the Random Forest and
+   a naive persistence rule make identical predictions on every shared day, confirming the
+   accuracy gap is attributable entirely to coverage composition, not predictive skill.
+
+3. The confidence filter achieves 0% accuracy on calm-to-high volatility transitions at all
+   horizons. Explicit cost-weighting up to 20× does not improve this, establishing an
+   informational ceiling rather than an objective-function deficiency.
+
+4. The full diagnostic replicates on S&P 500 trend regimes, establishing the persistence illusion
+   as a general structural property of selective prediction on serially correlated labels.
+
+We believe this work is well-suited to JRFM given its focus on practical risk management
+implications and its accessible, modular methodology. The paper contributes both a negative
+empirical result (ML models add no significant value over simple persistence rules for VIX regime
+classification) and a positive methodological contribution (a reusable six-component diagnostic
+protocol directly applicable to any selective prediction system on autocorrelated outcomes).
+
+All data are publicly available (Yahoo Finance and FRED). Code is available upon request.
+
+We confirm that neither the manuscript nor any parts of its content are currently under
+consideration for publication with or published in another journal.
+
+All authors have approved the manuscript and agree with its submission to JRFM.
+
+We thank you for your time and consideration.
+
+Sincerely,
+
+Akshat Gupta
+Texas Academy of Mathematics and Science
+University of North Texas
+akshatguptaakshatgupta@gmail.com
+ORCID: 0009-0003-7993-1640
+
+Dr. Jianguo Liu (Corresponding Author)
+Department of Mathematics
+University of North Texas
+jianguo.liu@unt.edu

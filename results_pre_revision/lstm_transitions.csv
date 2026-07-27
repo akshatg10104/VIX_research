@@ -1,0 +1,9 @@
+N,Transition,N_days,Coverage_pct,Accuracy
+5,calm_calm,614,87.8,83.1
+5,calm_high,79,79.7,34.9
+5,high_calm,84,77.4,29.2
+5,high_high,222,91.0,87.1
+10,calm_calm,587,92.7,85.7
+10,calm_high,101,88.1,19.1
+10,high_calm,111,90.1,59.0
+10,high_high,199,86.4,62.8

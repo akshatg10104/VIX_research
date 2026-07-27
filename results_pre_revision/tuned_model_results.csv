@@ -1,0 +1,41 @@
+N,Model,Type,Accuracy,Precision,Recall,Brier
+5,Random Forest,Baseline,83.78,72.79,73.75,0.1205
+5,Random Forest,Tuned,82.98,70.28,75.42,0.1217
+5,Random Forest,Calibrated,83.88,75.74,68.44,0.1125
+5,Random Forest,Selective(t=0.25),91.06,86.93,76.5,
+5,XGBoost,Baseline,83.48,71.25,75.75,0.1294
+5,XGBoost,Tuned,83.28,70.55,76.41,0.1285
+5,XGBoost,Calibrated,82.88,73.21,68.11,0.1158
+5,XGBoost,Selective(t=0.25),90.67,84.66,78.05,
+10,Random Forest,Baseline,78.56,63.11,69.0,0.1631
+10,Random Forest,Tuned,79.86,64.52,73.33,0.1512
+10,Random Forest,Calibrated,80.36,69.7,61.33,0.1368
+10,Random Forest,Selective(t=0.25),88.78,81.76,69.94,
+10,XGBoost,Baseline,78.96,63.89,69.0,0.1599
+10,XGBoost,Tuned,78.56,62.08,73.67,0.1666
+10,XGBoost,Calibrated,78.86,66.54,59.67,0.1377
+10,XGBoost,Selective(t=0.25),90.98,88.98,73.38,
+15,Random Forest,Baseline,74.92,57.93,59.87,0.1737
+15,Random Forest,Tuned,77.23,59.57,74.92,0.1665
+15,Random Forest,Calibrated,79.14,75.14,45.48,0.1455
+15,Random Forest,Selective(t=0.25),89.98,90.0,67.81,
+15,XGBoost,Baseline,73.52,54.87,65.89,0.1924
+15,XGBoost,Tuned,74.72,55.53,78.93,0.1853
+15,XGBoost,Calibrated,76.83,64.05,51.84,0.159
+15,XGBoost,Selective(t=0.25),87.68,85.85,63.64,
+20,Random Forest,Baseline,72.59,54.3,53.02,0.1831
+20,Random Forest,Tuned,75.4,56.96,72.82,0.1749
+20,Random Forest,Calibrated,78.92,80.99,38.59,0.152
+20,Random Forest,Selective(t=0.25),90.87,88.04,69.83,
+20,XGBoost,Baseline,74.4,56.62,61.74,0.1914
+20,XGBoost,Tuned,73.69,54.69,70.47,0.1915
+20,XGBoost,Calibrated,73.19,55.48,52.68,0.1674
+20,XGBoost,Selective(t=0.25),92.07,94.74,68.35,
+25,Random Forest,Baseline,69.65,49.24,54.21,0.2051
+25,Random Forest,Tuned,71.06,51.15,67.68,0.1912
+25,Random Forest,Calibrated,76.78,81.13,28.96,0.1676
+25,Random Forest,Selective(t=0.25),91.13,0.0,0.0,
+25,XGBoost,Baseline,66.53,45.29,58.25,0.2415
+25,XGBoost,Tuned,68.34,47.84,67.0,0.2094
+25,XGBoost,Calibrated,74.37,66.41,28.62,0.1803
+25,XGBoost,Selective(t=0.25),92.5,0.0,0.0,

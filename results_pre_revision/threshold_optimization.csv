@@ -1,0 +1,81 @@
+Model,N,Threshold,Sel_Acc,Pct_Days
+Random Forest,5,0.05,85.22,95.5
+Random Forest,5,0.1,86.22,90.8
+Random Forest,5,0.15,88.24,86.8
+Random Forest,5,0.2,89.88,82.1
+Random Forest,5,0.25,91.86,76.3
+Random Forest,5,0.3,93.86,68.5
+Random Forest,5,0.35,96.97,56.2
+Random Forest,5,0.4,97.84,41.7
+XGBoost,5,0.05,83.76,96.8
+XGBoost,5,0.1,85.54,92.1
+XGBoost,5,0.15,87.18,86.7
+XGBoost,5,0.2,89.71,78.8
+XGBoost,5,0.25,92.11,71.1
+XGBoost,5,0.3,94.08,60.9
+XGBoost,5,0.35,95.95,49.4
+XGBoost,5,0.4,97.65,34.0
+Random Forest,10,0.05,81.64,93.9
+Random Forest,10,0.1,83.0,89.6
+Random Forest,10,0.15,85.28,82.4
+Random Forest,10,0.2,87.17,74.9
+Random Forest,10,0.25,90.0,60.1
+Random Forest,10,0.3,93.41,50.2
+Random Forest,10,0.35,96.46,34.0
+Random Forest,10,0.4,,0.0
+XGBoost,10,0.05,81.81,95.3
+XGBoost,10,0.1,83.3,90.6
+XGBoost,10,0.15,86.68,81.3
+XGBoost,10,0.2,89.37,73.5
+XGBoost,10,0.25,92.22,63.1
+XGBoost,10,0.3,94.33,40.7
+XGBoost,10,0.35,95.54,15.7
+XGBoost,10,0.4,,0.0
+Random Forest,15,0.05,80.89,89.8
+Random Forest,15,0.1,83.48,80.7
+Random Forest,15,0.15,85.71,68.8
+Random Forest,15,0.2,87.99,61.0
+Random Forest,15,0.25,90.02,51.3
+Random Forest,15,0.3,92.47,38.6
+Random Forest,15,0.35,,0.0
+Random Forest,15,0.4,,0.0
+XGBoost,15,0.05,80.26,91.5
+XGBoost,15,0.1,82.82,81.1
+XGBoost,15,0.15,84.8,68.6
+XGBoost,15,0.2,89.41,54.0
+XGBoost,15,0.25,92.2,36.0
+XGBoost,15,0.3,96.19,10.5
+XGBoost,15,0.35,,0.7
+XGBoost,15,0.4,,0.0
+Random Forest,20,0.05,78.86,95.5
+Random Forest,20,0.1,82.49,84.8
+Random Forest,20,0.15,86.91,63.7
+Random Forest,20,0.2,89.62,52.2
+Random Forest,20,0.25,92.72,31.7
+Random Forest,20,0.3,,0.1
+Random Forest,20,0.35,,0.0
+Random Forest,20,0.4,,0.0
+XGBoost,20,0.05,78.05,93.8
+XGBoost,20,0.1,81.11,78.1
+XGBoost,20,0.15,86.51,63.3
+XGBoost,20,0.2,92.47,38.7
+XGBoost,20,0.25,94.76,26.8
+XGBoost,20,0.3,,3.1
+XGBoost,20,0.35,,0.0
+XGBoost,20,0.4,,0.0
+Random Forest,25,0.05,80.05,83.1
+Random Forest,25,0.1,82.19,77.9
+Random Forest,25,0.15,85.3,52.0
+Random Forest,25,0.2,88.5,37.6
+Random Forest,25,0.25,90.3,26.9
+Random Forest,25,0.3,,2.9
+Random Forest,25,0.35,,2.5
+Random Forest,25,0.4,,0.0
+XGBoost,25,0.05,75.68,88.4
+XGBoost,25,0.1,77.03,80.5
+XGBoost,25,0.15,83.39,62.3
+XGBoost,25,0.2,85.08,47.8
+XGBoost,25,0.25,92.67,19.2
+XGBoost,25,0.3,93.82,17.9
+XGBoost,25,0.35,92.31,7.8
+XGBoost,25,0.4,,0.5

@@ -1,0 +1,278 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage{parskip}
+\usepackage{hyperref}
+\usepackage{microtype}
+
+\newenvironment{reviewer}{\color{blue!50!black}\itshape}{\normalcolor}
+\newcommand{\response}{\textbf{Response:} }
+
+\begin{document}
+
+\begin{center}
+{\Large \textbf{Response to Reviewers}}\\[6pt]
+Manuscript jrfm-4438773\\
+\emph{Selective Prediction and the Persistence Illusion: A Diagnostic Decomposition of VIX
+Regime Classification}\\[4pt]
+Akshat Gupta and Jianguo Liu
+\end{center}
+
+We thank the editor and both reviewers for exceptionally constructive reports. The revision
+implements every requested experiment and reframes the paper around the diagnostic protocol as
+its contribution. We respond point by point below; all section and table numbers refer to the
+revised manuscript. We begin with the editor's first major comment, since it is the one point
+that could have affected existing numbers---and, in the interest of full transparency, the
+editor's concern was warranted.
+
+\section*{Response to the Editor}
+
+\subsection*{Major Comments}
+
+\textbf{Major 1 (calibration of the persistence abstention constant $c$).}
+\begin{reviewer}
+If $c$ is calibrated on the test set, the baseline is tuned ex post on evaluation data\ldots
+Please state explicitly how $c$ is chosen, and if it uses test-set coverage, re-run with $c$
+set on the training window.
+\end{reviewer}
+
+\response We audited the code and report the finding plainly: in the submitted version, $c$
+(and the analogous coverage-matching thresholds for the LR, HAR-LR, and Markov baselines) was
+selected by matching the RF's \emph{test-window} covered count, using test-window VIX levels
+and model probabilities. No test \emph{labels} entered any threshold choice---the matching
+targeted coverage counts, not accuracy---but the editor is correct that this constituted
+ex-post use of evaluation data, and we agree it was inappropriate in a paper about evaluation
+artifacts. We have recalibrated every baseline threshold on the training window only: each
+threshold is now the training-window quantile of the relevant confidence measure that
+reproduces the RF's \emph{training} coverage rate at $\tau = 0.25$, frozen before the test
+window is touched. This procedure is now stated explicitly in Section 5.2 and Appendix F. We
+re-ran every affected analysis (baseline comparison, McNemar, bootstrap, 2022-exclusion,
+S\&P 500 replication, walk-forward folds), and additionally fixed the same pattern in two
+places the review could not have seen: the bootstrap helper function and the per-fold
+walk-forward persistence comparison. A full leakage sweep confirmed the remaining pipeline is
+clean (scalers fit on training only; calibration via \texttt{TimeSeriesSplit} within training;
+backward-looking feature windows; hyperparameters fixed a priori or tuned on training only).
+
+The changes to the numbers are reported honestly in the revision. The McNemar result is
+essentially unchanged ($b = c = 0$ at $N \in \{10, 20, 25\}$; disagreement on at most 3 of 708
+jointly covered days elsewhere, always in the RF's favor). Calm$\to$high covered accuracy
+remains 0\% everywhere. Two results changed materially: (i) the RF-minus-persistence gap at
+$N = 10$ is now statistically significant ($+2.8$ pp, 95\% CI $[+0.18, +5.27]$), which the
+revised Section 5.9 attributes---via the unchanged McNemar result---to coverage composition
+rather than predictive disagreement; and (ii) the HAR-LR no longer exceeds the RF in point
+estimate at four horizons (only at $N = 25$), so that claim has been replaced throughout by
+the statistically supported statement that the HAR-minus-RF bootstrap CIs include zero. We
+believe the corrected comparison is more honest and, because the coverage-composition
+mechanism is now demonstrated rather than asserted, ultimately more persuasive.
+
+\textbf{Major 2 (coverage matching $\neq$ composition matching; McNemar context).}
+
+\response Fully agreed. New Section 5.10 (``Composition of the Jointly Covered Set'') and
+Table 12 report, for each horizon, the size of RF $\cap$ persistence as a fraction of test
+days and its breakdown across the four transition types. The joint set is dominated by
+regime-stable days (92.9\% at $N = 5$; 92.9\% calm$\to$calm alone at $N = 25$). The revised
+text states the implication in the editor's own spirit: the $b = c = 0$ result is close to
+guaranteed \emph{given} that composition---the filter selects easy days, and that is the
+finding, not a nuisance.
+
+\textbf{Major 3 (circularity between label design and the persistence benchmark).}
+
+\response New Section 5.3 adds the requested continuous-forecast-then-threshold benchmark: a
+HAR regression of $\text{VIX}_{t+N}$ on daily/weekly/monthly VIX components, estimated on the
+training window, thresholded at 20, with an abstention band calibrated on training forecasts
+and frozen. Its behavior reproduces the discrete pipeline in full---overall covered accuracy
+within 1--7 pp of the RF and 0\% covered accuracy on calm$\to$high transitions at every
+horizon (Table 5). The diagnostic structure is therefore not an artifact of binarizing a
+mean-reverting process, and the revised text says exactly this.
+
+\textbf{Major 4 (bootstrap block length).}
+
+\response We re-ran the moving-block bootstrap at block lengths 32, 60, and 90 days
+(Appendix D, Table 22). The intervals are qualitatively stable: the $N = 10$ interval excludes
+zero at all three block lengths, and every other interval includes zero at all three. Section
+5.9 now acknowledges the dependence-order argument explicitly.
+
+\textbf{Major 5 (single-threshold evaluation; risk--coverage curves).}
+
+\response New Section 5.11 reports full risk--coverage curves per horizon for RF, HGB,
+XGBoost, and the persistence rule, with AURC in Table 13 (Figure 8). The threshold-free view
+adds an honest nuance, which we report: the ML models rank their own confidence better than
+the distance-to-threshold heuristic over the full coverage range (RF attains the lowest AURC
+at four of five horizons), but this ranking advantage operates within the regime-stable
+population and does not surface transition days at any coverage level.
+
+\textbf{Major 6 (effective sample on the key result; episodes).}
+
+\response New analysis in Section 5.5 clusters covered calm$\to$high days into episodes
+(gap $>$ 10 trading days). The counts are 16 episodes at $N = 5$, 15 at $N = 10$, 12 at
+$N = 15$, and 4--5 at $N = 20$ and 25, with dates listed. At short horizons the 0\% record
+therefore spans substantially more independent events than the 4--6 the decision letter
+anticipated; at the two longest horizons we temper the language exactly as requested (the
+revised text reads ``consistent with low---but not precisely estimated---transition skill'').
+
+\textbf{Major 7 (AUC and Brier by horizon).}
+
+\response Added as Appendix E (Table 23): AUC and Brier, pre- and post-calibration, for RF,
+HGB, and XGBoost at all horizons, with an interpretive paragraph noting that aggregate AUC on
+a 70/30 test set is itself dominated by the regime-stable population.
+
+\subsection*{Minor Comments}
+
+\textbf{Minor 1 (selective-prediction evaluation literature).} Added to Section 2.3: El-Yaniv
+and Wiener (2010) on risk--coverage foundations, Geifman et al.\ (2019) on AURC, and Fisch et
+al.\ (2022) on selective calibration, with a sentence relating our protocol to that strand.
+
+\textbf{Minor 2 (unused XGBoost reference).} Now cited in Section 4.2, where XGBoost joins the
+model set.
+
+\textbf{Minor 3 (per-horizon sample sizes).} Table 1 now reports train/test $N$ and class
+frequencies for every horizon.
+
+\textbf{Minor 4 (``informational ceiling'').} Retired as a global claim. The abstract and
+conclusions now use the Section 5.7 register: the failure is informational \emph{with respect
+to this feature set}, and richer information sets are flagged as the open question.
+
+\textbf{Minor 5 (AI declaration).} We appreciate the comment; the declaration has been updated
+to reflect the actual scope of assistance (analysis-code development, data processing, and
+manuscript drafting), with the authors' verification of all results stated explicitly.
+
+\textbf{Code release.} As encouraged, the complete pipeline is now public at
+\url{https://github.com/akshatg10104/VIX_research} and cited in the Data Availability
+Statement.
+
+\section*{Response to Reviewer 1}
+
+\textbf{Major 1 (novelty positioning).}
+
+\response The Introduction and Conclusions have been rewritten to lead with the diagnostic
+protocol as the contribution, with the persistence result as its demonstration case. A closing
+Introduction paragraph now separates (i) what this study demonstrates (two highly persistent
+financial classification tasks) from (ii) the broader hypothesis about selective prediction
+under serial dependence, for which we claim only two supporting cases.
+
+\textbf{Major 2 (GARCH / regime-switching benchmarks).}
+
+\response Two changes. First, Section 5.3 adds a continuous-forecast-then-threshold HAR
+benchmark, which empirically represents the autoregressive forecasting class that Fernandes et
+al.\ (2014) show is competitive for the VIX level; it reproduces the transition failure
+exactly. Second, Section 5.2 adds an explicit justification paragraph: GARCH-family models
+target the conditional variance of returns rather than the option-implied index level, and a
+GARCH-to-VIX-threshold conversion would require variance-risk-premium assumptions that make
+the comparison ambiguous, while Markov-switching dynamics are already represented by the
+Markov-chain baseline.
+
+\textbf{Major 3 (methodological transparency).}
+
+\response The complete code is now public (see above), and new Appendix F documents each item
+raised: feature construction timing, missing-observation handling, hyperparameter selection,
+absence of indirect test-set tuning, per-horizon calibration, baseline threshold calibration,
+and the exact bootstrap implementation.
+
+\textbf{Major 4 (statistical inference; confirmatory vs.\ descriptive).}
+
+\response The Conclusions now open with a two-tier classification: statistically supported
+findings (McNemar; bootstrap CIs; the 0\% transition record and its episode count) versus
+descriptive observations (point-estimate orderings within overlapping CIs), with an explicit
+multiple-comparisons acknowledgment noting that the central claims are negative results, for
+which multiplicity cuts against us finding spurious \emph{significance} rather than in favor
+of our conclusions.
+
+\textbf{Major 5 (generalizability).}
+
+\response All ``structural property'' language has been rescoped to the two studied problems;
+the general claim is now stated as a hypothesis, and cross-domain replication (credit spreads,
+recession indicators, currency crises) is listed in Future Work as required before broader
+claims.
+
+\textbf{Major 6 (practical implications).}
+
+\response New subsection ``Practical Implications: Who Should Use This Protocol, and How'' in
+the Conclusions names four audiences (model validators/MRM teams, quantitative researchers,
+referees and editors, practitioners), gives a six-item reporting checklist derived from the
+protocol, and discusses when abstention still adds value---including the abstention-spike
+leading-indicator observation as a worked example.
+
+\textbf{Minor comments 1--8.}
+
+\response All implemented: (1) the Introduction now explicitly distinguishes forecasting
+volatility from forecasting binary volatility regimes; (2) Section 3.3 expands the
+threshold-20 motivation (Whaley convention, practitioner usage), points to the 18/22
+robustness table, and notes data-driven threshold selection as an alternative; (3) per-horizon
+class frequencies appear in Table 1; (4) the threshold-sensitivity, VIX-threshold-robustness,
+and sustained-label tables have been moved to Appendix B to streamline the main text; (5)
+figure and table captions have been audited to state the metric and its base population
+(covered vs.\ all days) throughout; (6) Section 5.8 now notes that SHAP measures model
+attribution, not causal importance; (7) Section 5.7 adds the LSTM architecture justification
+(parameter budget matched to the ensembles, window matched to the longest feature lookback)
+and notes that architectures were deliberately not swept; (8) the global wording pass replaced
+``confirms/proves/establishes'' with ``suggests/indicates/is consistent with'' except where a
+result is a deterministic identity.
+
+\section*{Response to Reviewer 2}
+
+\textbf{Comment 1 (abstract too long).}
+
+\response The abstract has been shortened by roughly a third and now leads with the protocol,
+retaining three headline results.
+
+\textbf{Comment 2 (persistence dominating ML is not surprising; need a methodological
+contribution).}
+
+\response We agree the phenomenon is known, and the revision no longer presents it as the
+contribution. The contribution, stated in the first page of the Introduction, is the reusable
+six-component diagnostic protocol---coverage-matched baselines calibrated on training data,
+joint-coverage composition analysis, transition-conditional auditing, risk--coverage
+evaluation, attribution analysis, and abstention confound testing---together with its
+demonstration on two markets. To our knowledge no comparable protocol exists for selective
+prediction on serially correlated labels.
+
+\textbf{Comment 3 (stronger ML baselines: XGBoost, LightGBM, CatBoost, Transformers, TFT).}
+
+\response Following the editor's guidance on scope (``I would therefore accept either (a)
+adding one strong boosted model plus a continuous-forecast-then-threshold comparison\ldots''),
+we added XGBoost through the identical pipeline (Section 5.3 and Appendix C) plus the HAR
+forecast-then-threshold benchmark. XGBoost's selective accuracy, coverage, and
+balanced-accuracy profile track the RF closely---and its calm$\to$high covered accuracy is
+0.0\% at all five horizons, exactly as the paper's informational-constraint logic predicts for
+any architecture trained on this feature set. We believe this demonstration makes additional
+boosted variants uninformative, per the editor's ruling.
+
+\textbf{Comment 4 (richer predictors: option-implied measures, news, order flow).}
+
+\response Two clarifications. First, the feature set already contains option-implied
+measures: the CBOE SKEW index (three features) and the VIX term-structure spread
+(VIX3M $-$ VIX) are both derived from index option prices, so the negative result already
+covers the most accessible option-implied information. Second, the restriction to standard
+daily public data is deliberate: it makes the negative result a clean statement about a
+well-defined information set. The Limitations and Future Work sections now state prominently
+that news sentiment, order flow, intraday options flow, and macro surprise indices are the
+primary open direction for testing whether transitions are predictable from richer data.
+
+\textbf{Comment 5 (robustness: more out-of-sample testing, other markets/periods).}
+
+\response We respectfully note that the submitted manuscript already contained several of the
+requested checks, which the revision retains and extends: 5-fold expanding walk-forward
+validation (Section 5.6); a full cross-market replication on S\&P 500 trend regimes
+(Section 6); VIX-threshold robustness at 18/20/22 (Appendix B); and a 2022-bear-market
+exclusion check (Section 5.9). The revision adds: bootstrap block-length sensitivity at
+32/60/90 days (Appendix D), threshold-free risk--coverage curves with AURC (Section 5.11),
+and the XGBoost and HAR forecast-then-threshold benchmarks (Section 5.3). Extension to
+non-U.S.\ volatility indices (e.g., VSTOXX) is noted in the Limitations as future work.
+
+\textbf{Comment 6 (practical implications; who can use these results).}
+
+\response Addressed by the new Practical Implications subsection described in our response to
+Reviewer 1, Major 6: four named audiences and a concrete six-item evaluation checklist.
+
+\vspace{1em}
+We are grateful for the care taken by the editor and both reviewers; the revision is
+substantially stronger for it. We hope the revised manuscript now meets the standards of the
+journal.
+
+\begin{flushleft}
+Sincerely,\\[4pt]
+Akshat Gupta and Jianguo Liu
+\end{flushleft}
+
+\end{document}

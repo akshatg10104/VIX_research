@@ -1,0 +1,199 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\citation{whaley2009,bekaert2014}
+\citation{bloom2009}
+\citation{whaley2009}
+\citation{bollerslev1986}
+\citation{andersen2003}
+\citation{hamilton1989}
+\citation{paye2012}
+\citation{gu2020}
+\citation{chow1970,bartlett2008,geifman2017}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{2}{section.1}\protected@file@percent }
+\citation{bollerslev1986}
+\citation{hamilton1989}
+\citation{guidolin2007}
+\citation{andersen2003}
+\citation{corsi2009}
+\citation{whaley2009}
+\citation{bekaert2014}
+\citation{fernandes2014}
+\citation{gu2020}
+\citation{breiman2001}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Related Work}{4}{section.2}\protected@file@percent }
+\newlabel{sec:related}{{2}{4}{Related Work}{section.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Volatility Forecasting and Regime Modeling}{4}{subsection.2.1}\protected@file@percent }
+\citation{chow1970}
+\citation{bartlett2008}
+\citation{geifman2017}
+\citation{elyaniv2010}
+\citation{geifman2019}
+\citation{fisch2022}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Machine Learning for Financial Prediction}{5}{subsection.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Selective Prediction and the Reject Option}{5}{subsection.2.3}\protected@file@percent }
+\citation{whaley2009}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Data}{6}{section.3}\protected@file@percent }
+\newlabel{sec:data}{{3}{6}{Data}{section.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Market Data}{6}{subsection.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Macroeconomic Data}{6}{subsection.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Label Construction}{6}{subsection.3.3}\protected@file@percent }
+\newlabel{eq:label}{{1}{6}{Label Construction}{equation.1}{}}
+\newlabel{eq:sustained}{{2}{7}{Label Construction}{equation.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Class Distribution and Train/Test Split}{7}{subsection.3.4}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Sample sizes and class distribution (fraction of days with VIX $\geq $ 20) by prediction horizon after label shifting. The usable sample shrinks slightly with $N$ because the final $N$ days of the series have no observable label.}}{7}{table.caption.1}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{tab:class}{{1}{7}{Sample sizes and class distribution (fraction of days with VIX $\geq $ 20) by prediction horizon after label shifting. The usable sample shrinks slightly with $N$ because the final $N$ days of the series have no observable label}{table.caption.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Methodology}{7}{section.4}\protected@file@percent }
+\newlabel{sec:methodology}{{4}{7}{Methodology}{section.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Feature Engineering}{7}{subsection.4.1}\protected@file@percent }
+\citation{chen2016}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Models and Training Pipeline}{8}{subsection.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Probability Calibration}{8}{subsection.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Confidence-Based Selective Prediction}{9}{subsection.4.4}\protected@file@percent }
+\newlabel{eq:selective}{{3}{9}{Confidence-Based Selective Prediction}{equation.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Results}{9}{section.5}\protected@file@percent }
+\newlabel{sec:results}{{5}{9}{Results}{section.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Main Accuracy Results}{9}{subsection.5.1}\protected@file@percent }
+\newlabel{sec:main}{{5.1}{9}{Main Accuracy Results}{subsection.5.1}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Baseline and selective ($\tau = 0.25$) accuracy, coverage, and balanced accuracy on covered days. Gain = selective minus baseline in percentage points (pp).}}{9}{table.caption.2}\protected@file@percent }
+\newlabel{tab:main}{{2}{9}{Baseline and selective ($\tau = 0.25$) accuracy, coverage, and balanced accuracy on covered days. Gain = selective minus baseline in percentage points (pp)}{table.caption.2}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Extended metrics on covered days for Random Forest ($\tau = 0.25$). At $N = 25$, precision and recall are both 0\% and balanced accuracy equals 50\%, confirming the model exclusively predicts the calm class at this horizon.}}{10}{table.caption.3}\protected@file@percent }
+\newlabel{tab:extended}{{3}{10}{Extended metrics on covered days for Random Forest ($\tau = 0.25$). At $N = 25$, precision and recall are both 0\% and balanced accuracy equals 50\%, confirming the model exclusively predicts the calm class at this horizon}{table.caption.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Baseline, selective accuracy, and balanced accuracy across prediction horizons for Random Forest (left) and HGB (right). Baseline accuracy is computed on all test days; selective and balanced accuracy on covered days only. At $N = 25$, balanced accuracy equals 50\%, indicating a coin-flip result despite 90\% selective accuracy.}}{10}{figure.caption.4}\protected@file@percent }
+\newlabel{fig:main}{{1}{10}{Baseline, selective accuracy, and balanced accuracy across prediction horizons for Random Forest (left) and HGB (right). Baseline accuracy is computed on all test days; selective and balanced accuracy on covered days only. At $N = 25$, balanced accuracy equals 50\%, indicating a coin-flip result despite 90\% selective accuracy}{figure.caption.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Comparison to Naive Baselines}{10}{subsection.5.2}\protected@file@percent }
+\newlabel{sec:baselines}{{5.2}{10}{Comparison to Naive Baselines}{subsection.5.2}{}}
+\citation{corsi2009}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces RF selective accuracy vs.\ naive baselines ($\tau = 0.25$; all baseline abstention thresholds calibrated on the training window and frozen). All accuracies are computed on each system's covered test days. Cov columns report realized test coverage. Bolded values indicate where a baseline exceeds the RF selective accuracy.}}{11}{table.caption.5}\protected@file@percent }
+\newlabel{tab:baselines}{{4}{11}{RF selective accuracy vs.\ naive baselines ($\tau = 0.25$; all baseline abstention thresholds calibrated on the training window and frozen). All accuracies are computed on each system's covered test days. Cov columns report realized test coverage. Bolded values indicate where a baseline exceeds the RF selective accuracy}{table.caption.5}{}}
+\citation{fernandes2014}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Left: RF selective vs.\ naive baseline accuracy across horizons (covered test days; baseline thresholds frozen from the training window). Right: RF-minus-persistence gap with 95\% moving-block bootstrap CI; only the $N = 10$ interval excludes zero.}}{12}{figure.caption.6}\protected@file@percent }
+\newlabel{fig:baselines}{{2}{12}{Left: RF selective vs.\ naive baseline accuracy across horizons (covered test days; baseline thresholds frozen from the training window). Right: RF-minus-persistence gap with 95\% moving-block bootstrap CI; only the $N = 10$ interval excludes zero}{figure.caption.6}{}}
+\@writefile{toc}{\contentsline {paragraph}{Why not GARCH or regime-switching benchmarks?}{12}{section*.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Forecast-then-Threshold HAR and XGBoost Benchmarks}{13}{subsection.5.3}\protected@file@percent }
+\newlabel{sec:new_benchmarks}{{5.3}{13}{Forecast-then-Threshold HAR and XGBoost Benchmarks}{subsection.5.3}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Forecast-then-threshold HAR benchmark vs.\ RF selective accuracy, and its calm$\to $high transition record. Accuracies on covered test days; the abstention band $d$ is calibrated on the training window.}}{13}{table.caption.8}\protected@file@percent }
+\newlabel{tab:har_threshold}{{5}{13}{Forecast-then-threshold HAR benchmark vs.\ RF selective accuracy, and its calm$\to $high transition record. Accuracies on covered test days; the abstention band $d$ is calibrated on the training window}{table.caption.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Persistence Quantification}{14}{subsection.5.4}\protected@file@percent }
+\newlabel{sec:persist_quant}{{5.4}{14}{Persistence Quantification}{subsection.5.4}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Empirical VIX transition probabilities and decomposition of RF correct covered predictions. P(H$\mid $H) = P(VIX$_{t+N} \geq 20 \mid $ VIX$_t \geq 20$); P(H$\mid $C) = P(VIX$_{t+N} \geq 20 \mid $ VIX$_t < 20$). Same-regime \% = fraction of correct RF covered predictions that match the regime at $t$.}}{14}{table.caption.9}\protected@file@percent }
+\newlabel{tab:persist_quant}{{6}{14}{Empirical VIX transition probabilities and decomposition of RF correct covered predictions. P(H$\mid $H) = P(VIX$_{t+N} \geq 20 \mid $ VIX$_t \geq 20$); P(H$\mid $C) = P(VIX$_{t+N} \geq 20 \mid $ VIX$_t < 20$). Same-regime \% = fraction of correct RF covered predictions that match the regime at $t$}{table.caption.9}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Left: empirical transition probabilities conditional on today's regime (all test days). Center: persistence ratio P(H$\mid $H)/P(H$\mid $C). Right: decomposition of RF correct \emph  {covered} predictions into same-regime and regime-change calls. At $N \geq 20$, 100\% of correct predictions are same-regime.}}{14}{figure.caption.10}\protected@file@percent }
+\newlabel{fig:persist_quant}{{3}{14}{Left: empirical transition probabilities conditional on today's regime (all test days). Center: persistence ratio P(H$\mid $H)/P(H$\mid $C). Right: decomposition of RF correct \emph {covered} predictions into same-regime and regime-change calls. At $N \geq 20$, 100\% of correct predictions are same-regime}{figure.caption.10}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}Regime Transition Analysis}{15}{subsection.5.5}\protected@file@percent }
+\newlabel{sec:transitions}{{5.5}{15}{Regime Transition Analysis}{subsection.5.5}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces RF selective coverage and accuracy by regime transition type ($\tau = 0.25$, test set; accuracy on covered days within each transition type). Calm$\to $high accuracy is \textbf  {0\%} at all horizons: every covered prediction on a day about to spike is a confident ``stay calm'' signal.}}{15}{table.caption.11}\protected@file@percent }
+\newlabel{tab:trans}{{7}{15}{RF selective coverage and accuracy by regime transition type ($\tau = 0.25$, test set; accuracy on covered days within each transition type). Calm$\to $high accuracy is \textbf {0\%} at all horizons: every covered prediction on a day about to spike is a confident ``stay calm'' signal}{table.caption.11}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces RF selective accuracy by regime transition type and horizon (covered days only, $\tau = 0.25$). Calm$\to $high rows are uniformly 0\% at all horizons.}}{15}{figure.caption.12}\protected@file@percent }
+\newlabel{fig:trans}{{4}{15}{RF selective accuracy by regime transition type and horizon (covered days only, $\tau = 0.25$). Calm$\to $high rows are uniformly 0\% at all horizons}{figure.caption.12}{}}
+\@writefile{toc}{\contentsline {paragraph}{How many independent events does the 0\% rest on?}{15}{section*.13}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Structural caveat.}{16}{section*.14}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Event case studies.}{16}{section*.15}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Model behavior ($\hat  {p}_t$, $N = 5$, $\tau = 0.25$) for up to 40 trading days before four major volatility events (the June 2022 window is shorter because the test period begins in mid-2022). In all four cases the model issues confident calm predictions leading up to the event.}}{17}{figure.caption.16}\protected@file@percent }
+\newlabel{fig:events}{{5}{17}{Model behavior ($\hat {p}_t$, $N = 5$, $\tau = 0.25$) for up to 40 trading days before four major volatility events (the June 2022 window is shorter because the test period begins in mid-2022). In all four cases the model issues confident calm predictions leading up to the event}{figure.caption.16}{}}
+\@writefile{toc}{\contentsline {paragraph}{Cost-weighting does not rescue calm$\to $high recall.}{17}{section*.17}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces Effect of class-weighting on transition coverage and selective accuracy. Calm$\to $high accuracy is \textbf  {0.0\%} at every weight for both horizons.}}{18}{table.caption.18}\protected@file@percent }
+\newlabel{tab:reweight}{{8}{18}{Effect of class-weighting on transition coverage and selective accuracy. Calm$\to $high accuracy is \textbf {0.0\%} at every weight for both horizons}{table.caption.18}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Abstention rate (fraction of all test days on which the model declines to predict) before calm$\to $high transitions (red) vs.\ calm$\to $calm days (green). At lag = 1 day, the abstention rate before spikes is more than double the overall rate.}}{18}{figure.caption.20}\protected@file@percent }
+\newlabel{fig:abstention}{{6}{18}{Abstention rate (fraction of all test days on which the model declines to predict) before calm$\to $high transitions (red) vs.\ calm$\to $calm days (green). At lag = 1 day, the abstention rate before spikes is more than double the overall rate}{figure.caption.20}{}}
+\@writefile{toc}{\contentsline {paragraph}{Abstention as a leading indicator.}{18}{figure.caption.20}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.6}Walk-Forward Validation}{19}{subsection.5.6}\protected@file@percent }
+\newlabel{sec:wf}{{5.6}{19}{Walk-Forward Validation}{subsection.5.6}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces 5-fold expanding walk-forward validation (fold means $\pm $ std of accuracy on each fold's covered days; persistence threshold calibrated on each fold's training window). Shaded rows indicate that at $N = 20$ the RF/HGB standard deviations exceed 25 pp; persistence remains stable.}}{19}{table.caption.21}\protected@file@percent }
+\newlabel{tab:wf}{{9}{19}{5-fold expanding walk-forward validation (fold means $\pm $ std of accuracy on each fold's covered days; persistence threshold calibrated on each fold's training window). Shaded rows indicate that at $N = 20$ the RF/HGB standard deviations exceed 25 pp; persistence remains stable}{table.caption.21}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.7}LSTM Comparison}{19}{subsection.5.7}\protected@file@percent }
+\newlabel{sec:lstm}{{5.7}{19}{LSTM Comparison}{subsection.5.7}{}}
+\citation{lundberg2017}
+\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces LSTM vs.\ RF at $\tau = 0.25$. BalAcc = balanced accuracy on covered days. Both models are evaluated on the subsample of test days with a complete 20-day feature window, so the RF columns differ slightly from Table~\ref {tab:main}, which uses all test days.}}{20}{table.caption.22}\protected@file@percent }
+\newlabel{tab:lstm}{{10}{20}{LSTM vs.\ RF at $\tau = 0.25$. BalAcc = balanced accuracy on covered days. Both models are evaluated on the subsample of test days with a complete 20-day feature window, so the RF columns differ slightly from Table~\ref {tab:main}, which uses all test days}{table.caption.22}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.8}SHAP Feature Attribution}{20}{subsection.5.8}\protected@file@percent }
+\newlabel{sec:shap}{{5.8}{20}{SHAP Feature Attribution}{subsection.5.8}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Mean absolute SHAP values (top 15 of 36 features) at $N = 5$ (left) and $N = 10$ (right). VIX technical features account for 71.9\% and 64.7\% of total SHAP mass, respectively.}}{20}{figure.caption.23}\protected@file@percent }
+\newlabel{fig:shap}{{7}{20}{Mean absolute SHAP values (top 15 of 36 features) at $N = 5$ (left) and $N = 10$ (right). VIX technical features account for 71.9\% and 64.7\% of total SHAP mass, respectively}{figure.caption.23}{}}
+\citation{kunsch1989}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.9}Statistical Significance of the Persistence Gap}{21}{subsection.5.9}\protected@file@percent }
+\newlabel{sec:bootstrap}{{5.9}{21}{Statistical Significance of the Persistence Gap}{subsection.5.9}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces Moving-block bootstrap 95\% confidence intervals for the RF-minus-persistence selective accuracy gap (block length 32 days). Only the $N = 10$ interval excludes zero; this holds at block lengths 60 and 90 as well (Appendix~\ref {app:blocklen}).}}{21}{table.caption.24}\protected@file@percent }
+\newlabel{tab:boot}{{11}{21}{Moving-block bootstrap 95\% confidence intervals for the RF-minus-persistence selective accuracy gap (block length 32 days). Only the $N = 10$ interval excludes zero; this holds at block lengths 60 and 90 as well (Appendix~\ref {app:blocklen})}{table.caption.24}{}}
+\citation{geifman2019}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.10}Composition of the Jointly Covered Set}{22}{subsection.5.10}\protected@file@percent }
+\newlabel{sec:joint_coverage}{{5.10}{22}{Composition of the Jointly Covered Set}{subsection.5.10}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {12}{\ignorespaces Size and transition-type composition of the jointly covered set (RF $\cap $ persistence, $\tau = 0.25$). Percentages in the four rightmost columns are shares of the joint set.}}{22}{table.caption.25}\protected@file@percent }
+\newlabel{tab:joint}{{12}{22}{Size and transition-type composition of the jointly covered set (RF $\cap $ persistence, $\tau = 0.25$). Percentages in the four rightmost columns are shares of the joint set}{table.caption.25}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.11}Risk--Coverage Analysis}{22}{subsection.5.11}\protected@file@percent }
+\newlabel{sec:risk_coverage}{{5.11}{22}{Risk--Coverage Analysis}{subsection.5.11}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Risk--coverage curves per horizon (test set; selective risk = error rate on covered days as coverage varies over the full confidence sweep). Persistence uses $|\text  {VIX}_t - 20|$ as its confidence score.}}{23}{figure.caption.26}\protected@file@percent }
+\newlabel{fig:risk_coverage}{{8}{23}{Risk--coverage curves per horizon (test set; selective risk = error rate on covered days as coverage varies over the full confidence sweep). Persistence uses $|\text {VIX}_t - 20|$ as its confidence score}{figure.caption.26}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {13}{\ignorespaces Area under the risk--coverage curve (AURC; lower is better) by model and horizon.}}{23}{table.caption.27}\protected@file@percent }
+\newlabel{tab:aurc}{{13}{23}{Area under the risk--coverage curve (AURC; lower is better) by model and horizon}{table.caption.27}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.12}Cost-Weighted Utility Analysis}{23}{subsection.5.12}\protected@file@percent }
+\newlabel{sec:utility}{{5.12}{23}{Cost-Weighted Utility Analysis}{subsection.5.12}{}}
+\newlabel{eq:utility}{{4}{23}{Cost-Weighted Utility Analysis}{equation.4}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {14}{\ignorespaces Cost-weighted utility per prediction under different FN/FP cost ratios $C$. Higher utility (closer to 0) is better. Bolded entries show where persistence dominates RF selective.}}{24}{table.caption.28}\protected@file@percent }
+\newlabel{tab:utility}{{14}{24}{Cost-weighted utility per prediction under different FN/FP cost ratios $C$. Higher utility (closer to 0) is better. Bolded entries show where persistence dominates RF selective}{table.caption.28}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Replication: S\&P 500 Trend-Regime Classification}{24}{section.6}\protected@file@percent }
+\newlabel{sec:replication}{{6}{24}{Replication: S\&P 500 Trend-Regime Classification}{section.6}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {15}{\ignorespaces S\&P 500 trend-regime replication (persistence band calibrated on training window). Accuracies on each system's covered test days. RF$-$Persist is negative at four of five horizons: persistence matches or dominates the RF selective classifier.}}{25}{table.caption.29}\protected@file@percent }
+\newlabel{tab:sp500}{{15}{25}{S\&P 500 trend-regime replication (persistence band calibrated on training window). Accuracies on each system's covered test days. RF$-$Persist is negative at four of five horizons: persistence matches or dominates the RF selective classifier}{table.caption.29}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {16}{\ignorespaces S\&P 500 transition accuracy. Bull$\to $bear covered accuracy is \textbf  {0\%}---exact mirror of VIX calm$\to $high.}}{25}{table.caption.30}\protected@file@percent }
+\newlabel{tab:sp500_trans}{{16}{25}{S\&P 500 transition accuracy. Bull$\to $bear covered accuracy is \textbf {0\%}---exact mirror of VIX calm$\to $high}{table.caption.30}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces S\&P 500 trend-regime replication (covered test days; persistence band frozen from the training window). Left: RF vs.\ persistence selective accuracy---persistence matches or dominates at four of five horizons. Center: persistence ratio of 23.8$\times $ at $N = 5$. Right: bull$\to $bear covered accuracy is 0\%, replicating the VIX calm$\to $high finding.}}{25}{figure.caption.31}\protected@file@percent }
+\newlabel{fig:sp500}{{9}{25}{S\&P 500 trend-regime replication (covered test days; persistence band frozen from the training window). Left: RF vs.\ persistence selective accuracy---persistence matches or dominates at four of five horizons. Center: persistence ratio of 23.8$\times $ at $N = 5$. Right: bull$\to $bear covered accuracy is 0\%, replicating the VIX calm$\to $high finding}{figure.caption.31}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {7}Conclusions}{26}{section.7}\protected@file@percent }
+\newlabel{sec:conclusion}{{7}{26}{Conclusions}{section.7}{}}
+\newlabel{sec:practical}{{7}{27}{Practical Implications: Who Should Use This Protocol, and How}{section*.32}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {A}Complete Feature List}{30}{appendix.A}\protected@file@percent }
+\newlabel{app:features}{{A}{30}{Complete Feature List}{appendix.A}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {17}{\ignorespaces All 36 engineered features, grouped by category. All features are computed from information available at or before prediction date $t$.}}{30}{table.caption.40}\protected@file@percent }
+\newlabel{tab:features}{{17}{30}{All 36 engineered features, grouped by category. All features are computed from information available at or before prediction date $t$}{table.caption.40}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B}Additional Robustness Results}{31}{appendix.B}\protected@file@percent }
+\newlabel{app:robustness}{{B}{31}{Additional Robustness Results}{appendix.B}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.1}Threshold Sensitivity}{31}{subsection.B.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {18}{\ignorespaces Random Forest selective accuracy (covered days) and coverage as a function of confidence threshold $\tau $.}}{31}{table.caption.41}\protected@file@percent }
+\newlabel{tab:threshold}{{18}{31}{Random Forest selective accuracy (covered days) and coverage as a function of confidence threshold $\tau $}{table.caption.41}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.2}Robustness Across VIX Thresholds}{31}{subsection.B.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {19}{\ignorespaces Random Forest accuracy gain (selective accuracy on covered days vs.\ baseline accuracy on all days) by VIX regime threshold at $\tau = 0.25$.}}{31}{table.caption.42}\protected@file@percent }
+\newlabel{tab:robust}{{19}{31}{Random Forest accuracy gain (selective accuracy on covered days vs.\ baseline accuracy on all days) by VIX regime threshold at $\tau = 0.25$}{table.caption.42}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.3}Sustained Regime Labels}{32}{subsection.B.3}\protected@file@percent }
+\newlabel{sec:sustained}{{B.3}{32}{Sustained Regime Labels}{subsection.B.3}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {20}{\ignorespaces Random Forest selective accuracy (covered days) for instantaneous and sustained regime labels at $\tau = 0.25$.}}{32}{table.caption.43}\protected@file@percent }
+\newlabel{tab:sustained}{{20}{32}{Random Forest selective accuracy (covered days) for instantaneous and sustained regime labels at $\tau = 0.25$}{table.caption.43}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {C}XGBoost Results}{32}{appendix.C}\protected@file@percent }
+\newlabel{app:xgb}{{C}{32}{XGBoost Results}{appendix.C}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {21}{\ignorespaces XGBoost selective performance and transition breakdown ($\tau = 0.25$, identical pipeline to RF/HGB). All accuracies on covered test days. C$\to $H = calm$\to $high.}}{32}{table.caption.44}\protected@file@percent }
+\newlabel{tab:xgb}{{21}{32}{XGBoost selective performance and transition breakdown ($\tau = 0.25$, identical pipeline to RF/HGB). All accuracies on covered test days. C$\to $H = calm$\to $high}{table.caption.44}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {D}Bootstrap Block-Length Sensitivity}{33}{appendix.D}\protected@file@percent }
+\newlabel{app:blocklen}{{D}{33}{Bootstrap Block-Length Sensitivity}{appendix.D}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {22}{\ignorespaces Moving-block bootstrap 95\% CIs for the RF-minus-persistence gap at block lengths 32, 60, and 90 days. The $N = 10$ interval excludes zero at all three block lengths; all other intervals include zero throughout.}}{33}{table.caption.45}\protected@file@percent }
+\newlabel{tab:blocklen}{{22}{33}{Moving-block bootstrap 95\% CIs for the RF-minus-persistence gap at block lengths 32, 60, and 90 days. The $N = 10$ interval excludes zero at all three block lengths; all other intervals include zero throughout}{table.caption.45}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {E}Discrimination and Calibration Metrics}{34}{appendix.E}\protected@file@percent }
+\newlabel{app:aucbrier}{{E}{34}{Discrimination and Calibration Metrics}{appendix.E}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {23}{\ignorespaces Test-set AUC and Brier score before and after isotonic calibration, by model and horizon. Both metrics are computed on all test days (not covered subsets). Calibration leaves AUC essentially unchanged (isotonic regression is monotone) and consistently improves the Brier score.}}{34}{table.caption.46}\protected@file@percent }
+\newlabel{tab:aucbrier}{{23}{34}{Test-set AUC and Brier score before and after isotonic calibration, by model and horizon. Both metrics are computed on all test days (not covered subsets). Calibration leaves AUC essentially unchanged (isotonic regression is monotone) and consistently improves the Brier score}{table.caption.46}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {F}Methodological Details}{34}{appendix.F}\protected@file@percent }
+\newlabel{app:methods}{{F}{34}{Methodological Details}{appendix.F}{}}
+\bibstyle{plainnat}
+\bibcite{andersen2003}{{1}{2003}{{Andersen et al.}}{{}}}
+\bibcite{bartlett2008}{{2}{2008}{{Bartlett and Wegkamp}}{{}}}
+\bibcite{bekaert2014}{{3}{2014}{{Bekaert and Hoerova}}{{}}}
+\bibcite{bloom2009}{{4}{2009}{{Bloom}}{{}}}
+\bibcite{bollerslev1986}{{5}{1986}{{Bollerslev}}{{}}}
+\bibcite{breiman2001}{{6}{2001}{{Breiman}}{{}}}
+\bibcite{chen2016}{{7}{2016}{{Chen and Guestrin}}{{}}}
+\bibcite{chow1970}{{8}{1970}{{Chow}}{{}}}
+\bibcite{corsi2009}{{9}{2009}{{Corsi}}{{}}}
+\bibcite{elyaniv2010}{{10}{2010}{{El-Yaniv and Wiener}}{{}}}
+\bibcite{fernandes2014}{{11}{2014}{{Fernandes et al.}}{{}}}
+\bibcite{fisch2022}{{12}{2022}{{Fisch et al.}}{{}}}
+\bibcite{geifman2017}{{13}{2017}{{Geifman and El-Yaniv}}{{}}}
+\bibcite{geifman2019}{{14}{2019}{{Geifman et al.}}{{}}}
+\bibcite{gu2020}{{15}{2020}{{Gu et al.}}{{}}}
+\bibcite{guidolin2007}{{16}{2007}{{Guidolin and Timmermann}}{{}}}
+\bibcite{hamilton1989}{{17}{1989}{{Hamilton}}{{}}}
+\bibcite{kunsch1989}{{18}{1989}{{Kunsch}}{{}}}
+\bibcite{lundberg2017}{{19}{2017}{{Lundberg and Lee}}{{}}}
+\bibcite{paye2012}{{20}{2012}{{Paye}}{{}}}
+\bibcite{whaley2009}{{21}{2009}{{Whaley}}{{}}}
+\gdef \@abspage@last{37}
